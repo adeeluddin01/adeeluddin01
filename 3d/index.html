@@ -186,25 +186,26 @@ const WORDS = [
   "LET'S BUILD SOMETHING"
 ];
 const TIERS = [
-  { n: 16000, dpr: 2   },  // high
-  { n: 10000, dpr: 1.5 },  // balanced
-  { n: 6000,  dpr: 1   }   // low
+  { n: 6000, dpr: 2   },  // high — balls ~9px, individually readable as metal
+  { n: 4000, dpr: 1.5 },  // balanced
+  { n: 2500, dpr: 1   }   // low
 ];
 const coarse = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
 let tier = coarse ? 1 : 0;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MORPH_DUR = 2.2;
 const BOARD_Z = -0.055;      // paperboard surface
-const BALL_R = 0.04;         // nominal sphere radius (world units)
+const BALL_R = 0.15;         // nominal sphere radius — ~9px on screen, reads as a real ball
+const BALL_Z = 0.17;         // resting center height (bottoms just kiss the board)
 
 /* Per-section studio lighting identities. Lerped, never snapped. */
 const LIGHTING = [
-  { key:0xf4f6ff, ki:2.3, kp:[-8,10,12], fill:0.55, rim:0x9fb8ff, ri:1.0, env:1.00 }, // intro: cool neutral
-  { key:0xffe9c9, ki:2.1, kp:[-10,6,10], fill:0.50, rim:0xffd9a8, ri:0.8, env:0.95 }, // about: warm intimate
-  { key:0xeaf2ff, ki:2.7, kp:[-6,12,10], fill:0.45, rim:0xbcd2ff, ri:1.2, env:1.05 }, // skills: precise
-  { key:0xf2f0ff, ki:2.9, kp:[-9,8,11],  fill:0.50, rim:0x8f7bff, ri:1.4, env:1.10 }, // projects: dramatic violet rim
-  { key:0xf4f4f2, ki:2.2, kp:[-11,5,9],  fill:0.55, rim:0xa8bdd8, ri:0.9, env:1.00 }, // experience: balanced, long shadows
-  { key:0xfff3e0, ki:3.1, kp:[-4,9,13],  fill:0.60, rim:0xffe0b8, ri:1.0, env:1.05 }  // contact: bright focal
+  { key:0xf4f6ff, ki:2.3, kp:[-8,10,12], fill:0.55, rim:0x9fb8ff, ri:1.0, env:1.15 }, // intro: cool neutral
+  { key:0xffe9c9, ki:2.1, kp:[-10,6,10], fill:0.50, rim:0xffd9a8, ri:0.8, env:1.09 }, // about: warm intimate
+  { key:0xeaf2ff, ki:2.7, kp:[-6,12,10], fill:0.45, rim:0xbcd2ff, ri:1.2, env:1.21 }, // skills: precise
+  { key:0xf2f0ff, ki:2.9, kp:[-9,8,11],  fill:0.50, rim:0x8f7bff, ri:1.4, env:1.26 }, // projects: dramatic violet rim
+  { key:0xf4f4f2, ki:2.2, kp:[-11,5,9],  fill:0.55, rim:0xa8bdd8, ri:0.9, env:1.15 }, // experience: balanced, long shadows
+  { key:0xfff3e0, ki:3.1, kp:[-4,9,13],  fill:0.60, rim:0xffe0b8, ri:1.0, env:1.21 }  // contact: bright focal
 ];
 
 /* ============================== renderer ============================== */
@@ -219,7 +220,7 @@ try {
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, TIERS[tier].dpr));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMappingExposure = 1.15;
 renderer.domElement.addEventListener('webglcontextlost', (e) => {
   e.preventDefault();
   showError('The graphics context was lost. Reload the page to restart the 3D scene.');
@@ -279,19 +280,19 @@ function makePaperTextures() {
   const x = c.getContext('2d');
   x.fillStyle = '#3a3b3c';
   x.fillRect(0, 0, S, S);
-  // broad, gentle mottling (large soft tonal shifts, no tiling artifacts)
-  for (let i = 0; i < 26; i++) {
-    const r = 120 + Math.random() * 260;
+  // broad, gentle mottling (large soft tonal shifts, kept faint so tiling stays invisible)
+  for (let i = 0; i < 60; i++) {
+    const r = 140 + Math.random() * 300;
     const gx = Math.random() * S, gy = Math.random() * S;
     const rg = x.createRadialGradient(gx, gy, 0, gx, gy, r);
     const light = Math.random() < 0.5;
-    rg.addColorStop(0, light ? 'rgba(255,255,255,0.028)' : 'rgba(0,0,0,0.045)');
+    rg.addColorStop(0, light ? 'rgba(255,255,255,0.020)' : 'rgba(0,0,0,0.032)');
     rg.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillStyle = rg;
     x.fillRect(gx - r, gy - r, r * 2, r * 2);
   }
   // fine paper fibres: thousands of tiny strokes, restrained alpha
-  for (let i = 0; i < 9000; i++) {
+  for (let i = 0; i < 12000; i++) {
     const fx = Math.random() * S, fy = Math.random() * S;
     const len = 2 + Math.random() * 7;
     const ang = Math.random() * Math.PI;
@@ -313,7 +314,7 @@ function makePaperTextures() {
   x.putImageData(img, 0, 0);
   const map = new THREE.CanvasTexture(c);
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
-  map.repeat.set(4, 2.5);
+  map.repeat.set(2, 1.4);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = renderer.capabilities.getMaxAnisotropy();
   // roughness variation derived from the same fibres (linear, no color space)
@@ -335,7 +336,7 @@ function makePaperTextures() {
   }
   const rough = new THREE.CanvasTexture(rc);
   rough.wrapS = rough.wrapT = THREE.RepeatWrapping;
-  rough.repeat.set(4, 2.5);
+  rough.repeat.set(2, 1.4);
   return { map, rough };
 }
 const paper = makePaperTextures();
@@ -419,20 +420,32 @@ const glyphCache = WORDS.map(sampleGlyphs);
 function scatterField(out, i3) {
   out[i3]     = (Math.random() - 0.5) * 30;
   out[i3 + 1] = (Math.random() - 0.5) * 9;
-  out[i3 + 2] = (Math.random() - 0.5) * 0.02;
+  out[i3 + 2] = BALL_Z + (Math.random() - 0.5) * 0.06;
 }
-/* 72% of spheres pack the letterforms (dense, legible); 28% drift as an
-   ambient field so the board always feels like a material, not a void. */
+/* Grid-packed glyph filling: one ball per ~diameter cell keeps letters dense
+   and legible with real spacing (no heavy overlap). Every remaining ball
+   joins the ambient field, so the board always feels like a material. */
 function buildFormation(wordIdx, N) {
   const glyphs = glyphCache[wordIdx];
+  const cell = BALL_R * 2.0;
+  const seen = new Set();
+  const cells = [];
+  for (const p of glyphs) {
+    const key = Math.round(p[0] / cell) + ':' + Math.round(p[1] / cell);
+    if (!seen.has(key)) { seen.add(key); cells.push(p); }
+  }
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    const t = cells[i]; cells[i] = cells[j]; cells[j] = t;
+  }
   const out = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) {
     const i3 = i * 3;
-    if (glyphs.length && Math.random() < 0.72) {
-      const p = glyphs[(Math.random() * glyphs.length) | 0];
-      out[i3]     = p[0] + (Math.random() - 0.5) * 0.045;
-      out[i3 + 1] = p[1] + (Math.random() - 0.5) * 0.045;
-      out[i3 + 2] = (Math.random() - 0.5) * 0.016;
+    if (i < cells.length) {
+      const p = cells[i];
+      out[i3]     = p[0] + (Math.random() - 0.5) * 0.06;
+      out[i3 + 1] = p[1] + (Math.random() - 0.5) * 0.06;
+      out[i3 + 2] = BALL_Z + (Math.random() - 0.5) * 0.06;
     } else {
       scatterField(out, i3);
     }
@@ -648,7 +661,7 @@ function goToSection(idx) {
   // shadow offset follows the key light: opposite azimuth, longer when lower
   const kp = LIGHTING[idx].kp;
   const len = Math.hypot(kp[0], kp[1]) || 1;
-  const mag = 0.06 + (12 - kp[1]) * 0.012;
+  const mag = 0.10 + (12 - kp[1]) * 0.02;
   blobUniforms.uShadowOffset.value.set(-kp[0] / len * mag, -kp[1] / len * mag);
   if (morphing) { queuedIndex = idx; return; }
   activeIndex = idx;
@@ -656,6 +669,26 @@ function goToSection(idx) {
 }
 
 /* ============================== scroll ============================== */
+/* Continuous scroll progress drives a gentle camera drift, so the board
+   visibly travels through the installation as you scroll (not just the
+   balls morphing in a frozen frame). */
+let scrollP = 0;
+function updateScrollP() {
+  const h = document.documentElement;
+  scrollP = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+}
+window.addEventListener('scroll', updateScrollP, { passive: true });
+updateScrollP();
+
+function updateCamera(dt) {
+  const tx = Math.sin(scrollP * Math.PI * 1.2) * 0.7;
+  const ty = (scrollP - 0.5) * 2.6;
+  const k = Math.min(1, dt * 2.2);
+  camera.position.x += (tx - camera.position.x) * k;
+  camera.position.y += (ty - camera.position.y) * k;
+  camera.lookAt(camera.position.x * 0.55, camera.position.y * 0.55, 0);
+}
+
 const sections = Array.from(document.querySelectorAll('section[data-index]'));
 const dots = Array.from(document.querySelectorAll('.dots button'));
 const io = new IntersectionObserver((entries) => {
@@ -724,6 +757,7 @@ function animate() {
   } else {
     applyLighting(1); // settle lighting instantly under reduced motion
   }
+  if (!reducedMotion) updateCamera(dt);
   renderer.render(scene, camera);
   if (firstFrame) {
     firstFrame = false;
