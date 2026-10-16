@@ -2,15 +2,14 @@
 
 <h1 align="center">Hi, I'm Adeel Uddin</h1>
 
-<p align="center"><strong>Full-Stack Developer — 10+ years turning business problems into shipped software.</strong><br/>From a rough idea to production: I own the whole loop — requirements, data model, API, interface, auth & permissions, testing, and the maintenance that keeps software alive after launch.</p>
+<p align="center"><strong>Full-Stack Developer turning business problems into shipped software.</strong><br/>From a rough idea to production: I own the whole loop — requirements, data model, API, interface, auth & permissions, testing, and the maintenance that keeps software alive after launch.</p>
 
 <p align="center">
-  <a href="https://adeeluddin01.github.io/adeeluddin01/3d/"><img src="https://img.shields.io/badge/Interactive_3D_Portfolio-050810?style=for-the-badge&logo=threedotjs&logoColor=white" alt="Interactive 3D portfolio"></a>
   <a href="mailto:adeeluddin03@gmail.com"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"></a>
   <a href="https://www.linkedin.com/in/adeeluddin01"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
 </p>
 
-<p align="center"><strong>10+ years</strong> building software &nbsp;·&nbsp; <strong>50+</strong> custom WordPress sites delivered &nbsp;·&nbsp; SaaS for <strong>banks, startups & product teams</strong></p>
+<p align="center"><strong>50+</strong> custom WordPress sites delivered &nbsp;·&nbsp; SaaS for <strong>banks, startups & product teams</strong></p>
 
 ---
 
@@ -60,7 +59,7 @@ Real-time 3D marketing website built with WebGL and Three.js, with AI-driven 3D 
 ---
 
 <details>
-<summary><strong>Experience timeline</strong> — 10+ years across banks, startups & studios (click to expand)</summary>
+<summary><strong>Experience timeline</strong> — across banks, startups & studios (click to expand)</summary>
 <br/>
 
 - **UBL — United Bank Limited** · Senior Officer, Automation · *Dec 2025 – Present*
