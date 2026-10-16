@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adeel Uddin — Interactive 3D</title>
 <style>
-  :root { --bg:#050810; --gold:#ffd97a; --ink:#ece7d9; --muted:#9a958a; }
+  :root { --bg:#1c1d1e; --gold:#ffd97a; --ink:#ece7d9; --muted:#9a958a; }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
@@ -16,9 +16,8 @@
   #gl { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0; }
   .vignette {
     position:fixed; inset:0; z-index:1; pointer-events:none;
-    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(2,4,10,.62) 100%);
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.5) 100%);
   }
-  /* Loading + error overlays: the page is never a mysterious black void. */
   #loader, #errbox {
     position:fixed; inset:0; z-index:10; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:1rem; text-align:center;
@@ -44,10 +43,10 @@
   section a { pointer-events:auto; color:var(--gold); text-decoration:none;
     border-bottom:1px solid rgba(255,217,122,.4); }
   section a:hover { border-bottom-color:var(--gold); }
-  .cap { max-width:320px; font-size:.85rem; }
-  .cap .eyebrow { font-size:.62rem; letter-spacing:.28em; color:rgba(154,149,138,.75);
+  .cap { max-width:340px; font-size:.85rem; }
+  .cap .eyebrow { font-size:.62rem; letter-spacing:.28em; color:rgba(154,149,138,.8);
     margin:0 0 .5rem; text-transform:uppercase; }
-  .cap .role, .cap .about { font-size:.85rem; letter-spacing:.06em; color:rgba(236,231,217,.55);
+  .cap .role, .cap .about { font-size:.85rem; letter-spacing:.06em; color:rgba(236,231,217,.62);
     line-height:1.65; margin:0; }
   .cap .scroll-hint { margin-top:1.2rem; font-size:.68rem; letter-spacing:.22em;
     text-transform:uppercase; color:var(--muted); animation:hint 2.2s ease-in-out infinite; }
@@ -57,7 +56,7 @@
     border:1px solid rgba(255,217,122,.35); border-radius:999px; padding:.32rem .7rem;
     background:rgba(5,8,16,.45); }
   .cap .work-list { list-style:none; padding:0; margin:.8rem 0 0; display:grid; gap:.7rem;
-    font-size:.85rem; color:rgba(236,231,217,.6); }
+    font-size:.85rem; color:rgba(236,231,217,.66); }
   .cap .work-list .sub { font-size:.75rem; color:var(--muted); }
   .cap .contact-links { display:flex; gap:1rem; margin-top:.9rem; font-size:.85rem; flex-wrap:wrap; }
   .dots { position:fixed; right:1.1rem; top:50%; transform:translateY(-50%); z-index:3;
@@ -75,7 +74,7 @@
 
 <div id="loader" role="status">
   <div class="spin"></div>
-  <p>FORGING 60,000 MAGNETS&hellip;</p>
+  <p>PREPARING THE INSTALLATION&hellip;</p>
 </div>
 <div id="errbox" role="alert">
   <h2>3D could not start</h2>
@@ -150,9 +149,9 @@
 
 <script type="module">
 /* =====================================================================
-   Boot with resilience: try multiple CDNs for the Three.js engine, and
-   never leave the visitor staring at a black void — loading and error
-   states are explicit.
+   ADEL UDDIN — METALLIC BALL ART INSTALLATION
+   Real instanced sphere geometry + PBR metal + procedural studio HDRI +
+   paperboard material + per-sphere contact shadows + scroll choreography.
    ===================================================================== */
 const loader = document.getElementById('loader');
 const errbox = document.getElementById('errbox');
@@ -171,15 +170,13 @@ const CDNS = [
   'https://unpkg.com/three@0.160.0/build/three.module.js',
   'https://esm.sh/three@0.160.0'
 ];
-let THREE = null, cdnUsed = '';
+let THREE = null;
 for (const url of CDNS) {
-  try { THREE = await import(url); cdnUsed = url; break; }
-  catch (e) { /* try next CDN */ }
+  try { THREE = await import(url); break; } catch (e) { /* next CDN */ }
 }
 if (!THREE) { showError('Could not load the 3D engine (network blocked all CDNs). Check your connection and reload.'); throw new Error('CDN failed'); }
 
 /* ============================== config ============================== */
-const N = 60000;
 const WORDS = [
   'ADEEL UDDIN',
   'FULL-STACK DEVELOPER',
@@ -188,9 +185,27 @@ const WORDS = [
   'GARAGEPAL \u2022 SAUDIPAK \u2022 KARIGHAR',
   "LET'S BUILD SOMETHING"
 ];
-const BG = new THREE.Color(0x050810);
-const MORPH_DUR = 1.8;
+const TIERS = [
+  { n: 16000, dpr: 2   },  // high
+  { n: 10000, dpr: 1.5 },  // balanced
+  { n: 6000,  dpr: 1   }   // low
+];
+const coarse = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+let tier = coarse ? 1 : 0;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MORPH_DUR = 2.2;
+const BOARD_Z = -0.055;      // paperboard surface
+const BALL_R = 0.04;         // nominal sphere radius (world units)
+
+/* Per-section studio lighting identities. Lerped, never snapped. */
+const LIGHTING = [
+  { key:0xf4f6ff, ki:2.3, kp:[-8,10,12], fill:0.55, rim:0x9fb8ff, ri:1.0, env:1.00 }, // intro: cool neutral
+  { key:0xffe9c9, ki:2.1, kp:[-10,6,10], fill:0.50, rim:0xffd9a8, ri:0.8, env:0.95 }, // about: warm intimate
+  { key:0xeaf2ff, ki:2.7, kp:[-6,12,10], fill:0.45, rim:0xbcd2ff, ri:1.2, env:1.05 }, // skills: precise
+  { key:0xf2f0ff, ki:2.9, kp:[-9,8,11],  fill:0.50, rim:0x8f7bff, ri:1.4, env:1.10 }, // projects: dramatic violet rim
+  { key:0xf4f4f2, ki:2.2, kp:[-11,5,9],  fill:0.55, rim:0xa8bdd8, ri:0.9, env:1.00 }, // experience: balanced, long shadows
+  { key:0xfff3e0, ki:3.1, kp:[-4,9,13],  fill:0.60, rim:0xffe0b8, ri:1.0, env:1.05 }  // contact: bright focal
+];
 
 /* ============================== renderer ============================== */
 const canvas = document.getElementById('gl');
@@ -201,161 +216,383 @@ try {
   showError('WebGL is unavailable in this browser, so the 3D scene cannot start.');
   throw e;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, TIERS[tier].dpr));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(BG, 1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 renderer.domElement.addEventListener('webglcontextlost', (e) => {
   e.preventDefault();
   showError('The graphics context was lost. Reload the page to restart the 3D scene.');
 });
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
+scene.background = new THREE.Color(0x101114);
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 140);
 camera.position.set(0, 0, 26);
 
-/* ============================== formation sampling ============================== */
+/* ============================== studio environment (reflections) ============ */
+/* A polished metal sphere is only as believable as what it reflects: a dark
+   studio with a big softbox, cool/warm strips and faint practical lights. */
+function makeStudioEnv() {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 512;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 512);
+  g.addColorStop(0.0, '#0b0d13');
+  g.addColorStop(0.48, '#151a24');
+  g.addColorStop(0.55, '#0c0e14');
+  g.addColorStop(1.0, '#04050a');
+  x.fillStyle = g;
+  x.fillRect(0, 0, 1024, 512);
+  const soft = (cx, cy, w, h, color, alpha) => {
+    x.save();
+    x.globalAlpha = alpha;
+    x.fillStyle = color;
+    x.shadowColor = color;
+    x.shadowBlur = 60;
+    x.beginPath();
+    x.roundRect(cx - w / 2, cy - h / 2, w, h, 24);
+    x.fill();
+    x.restore();
+  };
+  soft(300, 130, 340, 190, '#fff4e2', 0.95);   // main softbox, upper-left, warm white
+  soft(300, 130, 200, 110, '#ffffff', 0.55);   // hot core
+  soft(830, 210, 46, 300, '#7fb2ff', 0.50);    // cool blue strip, right
+  soft(120, 330, 200, 40, '#ffb46a', 0.35);    // amber strip, lower-left
+  soft(620, 90, 90, 46, '#dfe8ff', 0.30);      // distant practical
+  soft(920, 420, 130, 30, '#3a4358', 0.5);     // dim floor bounce
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envRT = pmrem.fromEquirectangular(makeStudioEnv());
+scene.environment = envRT.texture;
+
+/* ============================== paperboard ================================ */
+function makePaperTextures() {
+  const S = 1024;
+  const c = document.createElement('canvas');
+  c.width = c.height = S;
+  const x = c.getContext('2d');
+  x.fillStyle = '#3a3b3c';
+  x.fillRect(0, 0, S, S);
+  // broad, gentle mottling (large soft tonal shifts, no tiling artifacts)
+  for (let i = 0; i < 26; i++) {
+    const r = 120 + Math.random() * 260;
+    const gx = Math.random() * S, gy = Math.random() * S;
+    const rg = x.createRadialGradient(gx, gy, 0, gx, gy, r);
+    const light = Math.random() < 0.5;
+    rg.addColorStop(0, light ? 'rgba(255,255,255,0.028)' : 'rgba(0,0,0,0.045)');
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = rg;
+    x.fillRect(gx - r, gy - r, r * 2, r * 2);
+  }
+  // fine paper fibres: thousands of tiny strokes, restrained alpha
+  for (let i = 0; i < 9000; i++) {
+    const fx = Math.random() * S, fy = Math.random() * S;
+    const len = 2 + Math.random() * 7;
+    const ang = Math.random() * Math.PI;
+    const light = Math.random() < 0.5;
+    x.strokeStyle = light ? 'rgba(255,255,255,0.030)' : 'rgba(0,0,0,0.050)';
+    x.lineWidth = 0.8;
+    x.beginPath();
+    x.moveTo(fx, fy);
+    x.lineTo(fx + Math.cos(ang) * len, fy + Math.sin(ang) * len);
+    x.stroke();
+  }
+  // fine grain
+  const img = x.getImageData(0, 0, S, S);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 11;
+    d[i] += n; d[i + 1] += n; d[i + 2] += n;
+  }
+  x.putImageData(img, 0, 0);
+  const map = new THREE.CanvasTexture(c);
+  map.wrapS = map.wrapT = THREE.RepeatWrapping;
+  map.repeat.set(4, 2.5);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  // roughness variation derived from the same fibres (linear, no color space)
+  const rc = document.createElement('canvas');
+  rc.width = rc.height = S;
+  const rx = rc.getContext('2d');
+  rx.fillStyle = '#e8e8e8';
+  rx.fillRect(0, 0, S, S);
+  for (let i = 0; i < 9000; i++) {
+    const fx = Math.random() * S, fy = Math.random() * S;
+    const len = 2 + Math.random() * 7;
+    const ang = Math.random() * Math.PI;
+    rx.strokeStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)';
+    rx.lineWidth = 0.8;
+    rx.beginPath();
+    rx.moveTo(fx, fy);
+    rx.lineTo(fx + Math.cos(ang) * len, fy + Math.sin(ang) * len);
+    rx.stroke();
+  }
+  const rough = new THREE.CanvasTexture(rc);
+  rough.wrapS = rough.wrapT = THREE.RepeatWrapping;
+  rough.repeat.set(4, 2.5);
+  return { map, rough };
+}
+const paper = makePaperTextures();
+const board = new THREE.Mesh(
+  new THREE.PlaneGeometry(72, 42),
+  new THREE.MeshStandardMaterial({
+    map: paper.map,
+    roughnessMap: paper.rough,
+    roughness: 0.94,
+    metalness: 0.0,
+    bumpMap: paper.map,
+    bumpScale: 0.6,
+    envMapIntensity: 0.25
+  })
+);
+board.position.z = BOARD_Z;
+scene.add(board);
+
+/* ============================== studio lights ============================= */
+const keyLight = new THREE.DirectionalLight(0xf4f6ff, 2.3);
+keyLight.position.set(-8, 10, 12);
+scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xdfe8ff, 0.55);
+fillLight.position.set(9, -4, 8);
+scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0x9fb8ff, 1.0);
+rimLight.position.set(7, 2, 5);
+scene.add(rimLight);
+scene.add(new THREE.HemisphereLight(0x3a3f4a, 0x0a0b0e, 0.35));
+
+const _kc = new THREE.Color(), _rc = new THREE.Color(), _kp = new THREE.Vector3();
+let lightTarget = 0, lightMix = 1;
+function applyLighting(dt) {
+  const L = LIGHTING[lightTarget];
+  const k = Math.min(1, dt * 1.6); // gentle cross-fade, never a snap
+  keyLight.color.lerp(_kc.set(L.key), k);
+  keyLight.intensity += (L.ki - keyLight.intensity) * k;
+  _kp.set(L.kp[0], L.kp[1], L.kp[2]);
+  keyLight.position.lerp(_kp, k);
+  fillLight.intensity += (L.fill - fillLight.intensity) * k;
+  rimLight.color.lerp(_rc.set(L.rim), k);
+  rimLight.intensity += (L.ri - rimLight.intensity) * k;
+  const e = sphereMat.envMapIntensity + (L.env - sphereMat.envMapIntensity) * k;
+  sphereMat.envMapIntensity = e;
+}
+
+/* ============================== text sampling ============================= */
 const sampleCanvas = document.createElement('canvas');
-sampleCanvas.width = 1400;
-sampleCanvas.height = 400;
+sampleCanvas.width = 1600;
+sampleCanvas.height = 460;
 const sctx = sampleCanvas.getContext('2d', { willReadFrequently: true });
 
-function sampleWord(text) {
+/* Returns glyph pixel coordinates in world units. Tests the RED channel:
+   the canvas is filled with opaque black, so alpha is 255 everywhere. */
+function sampleGlyphs(text) {
   const W = sampleCanvas.width, H = sampleCanvas.height;
   sctx.fillStyle = '#000';
   sctx.fillRect(0, 0, W, H);
   sctx.textAlign = 'center';
   sctx.textBaseline = 'middle';
-  let size = 190;
+  let size = 200;
   const setFont = s => { sctx.font = '900 ' + s + 'px Arial, Helvetica, sans-serif'; };
   setFont(size);
-  const maxW = W - 140;
-  while (sctx.measureText(text).width > maxW && size > 36) { size -= 8; setFont(size); }
+  const maxW = W - 160;
+  while (sctx.measureText(text).width > maxW && size > 40) { size -= 8; setFont(size); }
   sctx.fillStyle = '#fff';
   sctx.fillText(text, W / 2, H / 2 + 6);
   const img = sctx.getImageData(0, 0, W, H).data;
-  const px = [], py = [];
-  // NOTE: the canvas is filled with OPAQUE black first, so the alpha channel is
-  // 255 everywhere — we must test a COLOR channel (red) to find the white text.
-  // Testing alpha here used to scatter every sphere across the whole rectangle.
+  const pts = [];
   for (let y = 0; y < H; y += 2) {
     for (let x = 0; x < W; x += 2) {
-      if (img[((y * W) + x) * 4] > 128) { px.push(x); py.push(y); }
+      if (img[((y * W) + x) * 4] > 128) {
+        pts.push([(x / W) * 28 - 14, 4 - (y / H) * 8]);
+      }
     }
   }
+  return pts;
+}
+const glyphCache = WORDS.map(sampleGlyphs);
+
+function scatterField(out, i3) {
+  out[i3]     = (Math.random() - 0.5) * 30;
+  out[i3 + 1] = (Math.random() - 0.5) * 9;
+  out[i3 + 2] = (Math.random() - 0.5) * 0.02;
+}
+/* 72% of spheres pack the letterforms (dense, legible); 28% drift as an
+   ambient field so the board always feels like a material, not a void. */
+function buildFormation(wordIdx, N) {
+  const glyphs = glyphCache[wordIdx];
   const out = new Float32Array(N * 3);
-  const M = px.length;
   for (let i = 0; i < N; i++) {
-    let X, Y;
-    if (M === 0) { X = Math.random() * W; Y = Math.random() * H; }
-    else { const j = Math.floor((i * M) / N); X = px[j]; Y = py[j]; }
-    out[i * 3]     = (X / W) * 28 - 14;
-    out[i * 3 + 1] = 4 - (Y / H) * 8;
-    out[i * 3 + 2] = (Math.random() - 0.5) * 1.0;
+    const i3 = i * 3;
+    if (glyphs.length && Math.random() < 0.72) {
+      const p = glyphs[(Math.random() * glyphs.length) | 0];
+      out[i3]     = p[0] + (Math.random() - 0.5) * 0.045;
+      out[i3 + 1] = p[1] + (Math.random() - 0.5) * 0.045;
+      out[i3 + 2] = (Math.random() - 0.5) * 0.016;
+    } else {
+      scatterField(out, i3);
+    }
   }
   return out;
 }
-const formations = WORDS.map(sampleWord);
-
-/* ============================== attributes ============================== */
-const GOLD  = [1.0, 0.851, 0.478];
-const WHITE = [1.0, 0.965, 0.910];
-const CYAN  = [0.478, 0.886, 1.0];
-
-const delayArr = new Float32Array(N);
-const colorArr = new Float32Array(N * 3);
-const sizeArr  = new Float32Array(N);
-for (let i = 0; i < N; i++) {
-  delayArr[i] = Math.random() * 0.35;
-  const r = Math.random();
-  const c = r < 0.70 ? GOLD : (r < 0.92 ? WHITE : CYAN);
-  colorArr[i * 3] = c[0]; colorArr[i * 3 + 1] = c[1]; colorArr[i * 3 + 2] = c[2];
-  sizeArr[i] = 2.5 + Math.random() * 3.0;
+function buildField(N) {
+  const out = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) scatterField(out, i * 3);
+  return out;
 }
 
-const geo = new THREE.BufferGeometry();
-geo.setAttribute('position',  new THREE.BufferAttribute(new Float32Array(formations[0]), 3));
-geo.setAttribute('aTargetB',  new THREE.BufferAttribute(new Float32Array(formations[0]), 3));
-geo.setAttribute('aDelay',    new THREE.BufferAttribute(delayArr, 1));
-geo.setAttribute('aColor',    new THREE.BufferAttribute(colorArr, 3));
-geo.setAttribute('aSize',     new THREE.BufferAttribute(sizeArr, 1));
+/* ============================== spheres (real PBR geometry) =============== */
+const MAXN = TIERS[0].n;
+const sphereBase = new THREE.SphereGeometry(1, 10, 8);
+const sphereGeo = new THREE.InstancedBufferGeometry();
+sphereGeo.index = sphereBase.index;
+sphereGeo.setAttribute('position', sphereBase.getAttribute('position'));
+sphereGeo.setAttribute('normal', sphereBase.getAttribute('normal'));
+sphereGeo.setAttribute('uv', sphereBase.getAttribute('uv'));
 
-/* ============================== shaders ============================== */
-const vertexShader = `
-attribute vec3 aTargetB;
-attribute float aDelay;
-attribute vec3 aColor;
-attribute float aSize;
-uniform float uProgress;
-uniform float uTime;
-uniform float uPixelRatio;
-uniform vec3 uMouse;
-uniform float uRepel;
-varying vec3 vColor;
-varying float vDepth;
-void main() {
-  float t = smoothstep(aDelay, aDelay + 0.35, uProgress);
-  t = t * t * (3.0 - 2.0 * t);
-  vec3 pos = mix(position, aTargetB, t);
-  pos += 0.012 * vec3(
-    sin(uTime * 0.7 + aDelay * 40.0),
-    cos(uTime * 0.6 + aDelay * 31.0),
-    sin(uTime * 0.5 + aDelay * 23.0)
-  );
-  vec3 dm = pos - uMouse;
-  float dist = length(dm);
-  pos += normalize(dm + vec3(0.0001)) * (1.0 - smoothstep(0.0, 1.4, dist)) * 0.35 * uRepel;
-  vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-  gl_Position = projectionMatrix * mvPosition;
-  gl_PointSize = aSize * uPixelRatio * (90.0 / -mvPosition.z);
-  vColor = aColor;
-  vDepth = -mvPosition.z;
+const aPosA = new Float32Array(MAXN * 3);
+const aPosB = new Float32Array(MAXN * 3);
+const aDelay = new Float32Array(MAXN);
+const aRand = new Float32Array(MAXN);
+const aScale = new Float32Array(MAXN);
+const aTint = new Float32Array(MAXN * 3);
+const field0 = buildField(MAXN);
+const wordForms = WORDS.map((_, wi) => buildFormation(wi, MAXN));
+aPosA.set(field0);
+aPosB.set(wordForms[0]);
+for (let i = 0; i < MAXN; i++) {
+  aDelay[i] = Math.random() * 0.4;
+  aRand[i] = Math.random();
+  aScale[i] = BALL_R * (0.82 + Math.random() * 0.36);
+  const w = Math.random();
+  const t = w < 0.78 ? [1, 1, 1] : (w < 0.93 ? [1.0, 0.96, 0.90] : [0.88, 0.94, 1.0]);
+  aTint[i * 3] = t[0]; aTint[i * 3 + 1] = t[1]; aTint[i * 3 + 2] = t[2];
 }
-`;
+sphereGeo.setAttribute('aPosA', new THREE.InstancedBufferAttribute(aPosA, 3));
+sphereGeo.setAttribute('aPosB', new THREE.InstancedBufferAttribute(aPosB, 3));
+sphereGeo.setAttribute('aDelay', new THREE.InstancedBufferAttribute(aDelay, 1));
+sphereGeo.setAttribute('aRand', new THREE.InstancedBufferAttribute(aRand, 1));
+sphereGeo.setAttribute('aScale', new THREE.InstancedBufferAttribute(aScale, 1));
+sphereGeo.setAttribute('aTint', new THREE.InstancedBufferAttribute(aTint, 3));
+sphereGeo.instanceCount = TIERS[tier].n;
 
-const fragmentShader = `
-uniform vec3 uRimColor;
-uniform vec3 uBgColor;
-varying vec3 vColor;
-varying float vDepth;
-void main() {
-  vec2 pc = gl_PointCoord - vec2(0.5);
-  float d = length(pc);
-  if (d > 0.5) discard;
-  float zz = sqrt(max(0.0, 1.0 - 4.0 * d * d));
-  vec3 n = normalize(vec3(pc * 2.0, zz));
-  vec3 L = normalize(vec3(-0.5, 0.8, 0.6));
-  vec3 V = vec3(0.0, 0.0, 1.0);
-  float diff = max(dot(n, L), 0.0);
-  vec3 H = normalize(L + V);
-  float spec = pow(max(dot(n, H), 0.0), 48.0);
-  float rim = pow(1.0 - n.z, 3.0);
-  vec3 col = vColor * (0.25 + 0.75 * diff) + spec * vec3(1.0) + rim * uRimColor * 0.35;
-  col *= 0.55 + 0.45 * n.z;
-  col = mix(col, uBgColor, smoothstep(24.0, 36.0, vDepth));
-  gl_FragColor = vec4(col, 1.0);
-}
-`;
-
-const uniforms = {
-  uProgress:  { value: 1.0 },
-  uTime:      { value: 0.0 },
-  uPixelRatio:{ value: Math.min(window.devicePixelRatio || 1, 2) },
-  uMouse:     { value: new THREE.Vector3(0, 0, -10) },
-  uRepel:     { value: 0.0 },
-  uRimColor:  { value: new THREE.Vector3(0.45, 0.60, 0.95) },
-  uBgColor:   { value: new THREE.Vector3(BG.r, BG.g, BG.b) }
+const sphereUniforms = {
+  uProgress: { value: 0.0 },   // intro: field -> name assembles on load
+  uTime: { value: 0.0 }
 };
+const sphereMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  metalness: 1.0,
+  roughness: 0.16,
+  envMapIntensity: 1.0
+});
+sphereMat.onBeforeCompile = (shader) => {
+  shader.uniforms.uProgress = sphereUniforms.uProgress;
+  shader.uniforms.uTime = sphereUniforms.uTime;
+  shader.vertexShader = `
+    attribute vec3 aPosA; attribute vec3 aPosB;
+    attribute float aDelay; attribute float aRand; attribute float aScale; attribute vec3 aTint;
+    uniform float uProgress; uniform float uTime;
+    varying vec3 vTint; varying float vRand;
+  ` + shader.vertexShader
+    .replace('#include <begin_vertex>', `
+      float mt = smoothstep(aDelay, aDelay + 0.35, uProgress);
+      mt = mt * mt * (3.0 - 2.0 * mt);
+      vec3 mcenter = mix(aPosA, aPosB, mt);
+      mcenter += 0.012 * aRand * vec3(
+        sin(uTime * 0.7 + aDelay * 40.0),
+        cos(uTime * 0.6 + aDelay * 31.0),
+        sin(uTime * 0.5 + aDelay * 23.0));
+      vec3 transformed = mcenter + position * aScale;
+      vTint = aTint; vRand = aRand;
+    `)
+    .replace('#include <roughnessmap_fragment>', `
+      #include <roughnessmap_fragment>
+      roughnessFactor = roughness * (0.82 + 0.36 * vRand);
+    `)
+    .replace('#include <color_fragment>', `
+      #include <color_fragment>
+      diffuseColor.rgb *= vTint;
+    `);
+  shader.fragmentShader = `varying vec3 vTint; varying float vRand;\n` + shader.fragmentShader;
+};
+sphereMat.customProgramCacheKey = () => 'metal-spheres-v1';
+const spheres = new THREE.Mesh(sphereGeo, sphereMat);
+spheres.frustumCulled = false;
+scene.add(spheres);
 
-const mat = new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader });
-const points = new THREE.Points(geo, mat);
-points.frustumCulled = false;
-scene.add(points);
+/* ============================== contact shadows ========================== */
+/* One soft blob per sphere, offset away from the key light, sliding with the
+   same morph timeline. Cheap, art-directable, always attached to the board. */
+function makeBlobTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(64, 64, 4, 64, 64, 62);
+  g.addColorStop(0, 'rgba(0,0,0,0.62)');
+  g.addColorStop(0.55, 'rgba(0,0,0,0.30)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = g;
+  x.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+const blobBase = new THREE.PlaneGeometry(1, 1);
+const blobGeo = new THREE.InstancedBufferGeometry();
+blobGeo.index = blobBase.index;
+blobGeo.setAttribute('position', blobBase.getAttribute('position'));
+blobGeo.setAttribute('uv', blobBase.getAttribute('uv'));
+blobGeo.setAttribute('aPosA', new THREE.InstancedBufferAttribute(aPosA, 3));
+blobGeo.setAttribute('aPosB', new THREE.InstancedBufferAttribute(aPosB, 3));
+blobGeo.setAttribute('aDelay', new THREE.InstancedBufferAttribute(aDelay, 1));
+blobGeo.setAttribute('aScale', new THREE.InstancedBufferAttribute(aScale, 1));
+blobGeo.instanceCount = TIERS[tier].n;
+const blobUniforms = {
+  uProgress: sphereUniforms.uProgress, // shared object: one timeline drives both
+  uShadowOffset: { value: new THREE.Vector2(0.07, -0.09) },
+  uMap: { value: makeBlobTexture() }
+};
+const blobMat = new THREE.ShaderMaterial({
+  uniforms: blobUniforms,
+  transparent: true,
+  depthWrite: false,
+  vertexShader: `
+    attribute vec3 aPosA; attribute vec3 aPosB;
+    attribute float aDelay; attribute float aScale;
+    uniform float uProgress; uniform vec2 uShadowOffset;
+    varying vec2 vUv;
+    void main() {
+      float t = smoothstep(aDelay, aDelay + 0.35, uProgress);
+      t = t * t * (3.0 - 2.0 * t);
+      vec3 c = mix(aPosA, aPosB, t);
+      vec3 wp = vec3(c.xy + uShadowOffset, ${BOARD_Z + 0.004});
+      vUv = uv;
+      vec4 mv = modelViewMatrix * vec4(wp + vec3(position.xy * aScale * 3.0, 0.0), 1.0);
+      gl_Position = projectionMatrix * mv;
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D uMap;
+    varying vec2 vUv;
+    void main() {
+      float a = texture2D(uMap, vUv).a;
+      gl_FragColor = vec4(0.0, 0.0, 0.0, a * 0.55);
+    }
+  `
+});
+const blobs = new THREE.Mesh(blobGeo, blobMat);
+blobs.frustumCulled = false;
+blobs.renderOrder = 1;
+scene.add(blobs);
 
-/* ============================== morph state machine ============================== */
+/* ============================== morph state machine ======================= */
 let morphing = false;
-let morphT = 1;
-let curEased = 1;
+let morphT = 0;
+let curEased = 0;
 let queuedIndex = -1;
+let activeIndex = -1; // -1 = intro field state
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -367,45 +604,53 @@ function sstepJS(e0, e1, x) {
   return t;
 }
 function bakeCurrentPositions() {
-  const pos = geo.attributes.position.array;
-  const tgt = geo.attributes.aTargetB.array;
-  for (let i = 0; i < N; i++) {
-    const t = sstepJS(delayArr[i], delayArr[i] + 0.35, curEased);
+  const pos = sphereGeo.getAttribute('aPosA').array;
+  const tgt = sphereGeo.getAttribute('aPosB').array;
+  for (let i = 0; i < MAXN; i++) {
+    const t = sstepJS(aDelay[i], aDelay[i] + 0.35, curEased);
     const i3 = i * 3;
     pos[i3]     += (tgt[i3]     - pos[i3])     * t;
     pos[i3 + 1] += (tgt[i3 + 1] - pos[i3 + 1]) * t;
     pos[i3 + 2] += (tgt[i3 + 2] - pos[i3 + 2]) * t;
   }
-  geo.attributes.position.needsUpdate = true;
+  sphereGeo.getAttribute('aPosA').needsUpdate = true;
 }
-function startMorph(wordIndex) {
+/* toWord: 0..5 index into WORDS. -1 not used here (field is boot-only). */
+function startMorph(wordIdx) {
   bakeCurrentPositions();
-  geo.attributes.aTargetB.array.set(formations[wordIndex]);
-  geo.attributes.aTargetB.needsUpdate = true;
-  for (let i = 0; i < N; i++) delayArr[i] = Math.random() * 0.35;
-  geo.attributes.aDelay.needsUpdate = true;
+  sphereGeo.getAttribute('aPosB').array.set(wordForms[wordIdx]);
+  sphereGeo.getAttribute('aPosB').needsUpdate = true;
+  for (let i = 0; i < MAXN; i++) aDelay[i] = Math.random() * 0.4;
+  sphereGeo.getAttribute('aDelay').needsUpdate = true;
   if (reducedMotion) {
     morphT = 1; curEased = 1; morphing = false;
-    uniforms.uProgress.value = 1;
+    sphereUniforms.uProgress.value = 1;
   } else {
     morphT = 0; morphing = true;
   }
+}
+function goToSection(idx) {
+  if (idx === activeIndex) return;
+  lightTarget = idx;
+  // shadow offset follows the key light: opposite azimuth, longer when lower
+  const kp = LIGHTING[idx].kp;
+  const len = Math.hypot(kp[0], kp[1]) || 1;
+  const mag = 0.06 + (12 - kp[1]) * 0.012;
+  blobUniforms.uShadowOffset.value.set(-kp[0] / len * mag, -kp[1] / len * mag);
+  if (morphing) { queuedIndex = idx; return; }
+  activeIndex = idx;
+  startMorph(idx);
 }
 
 /* ============================== scroll ============================== */
 const sections = Array.from(document.querySelectorAll('section[data-index]'));
 const dots = Array.from(document.querySelectorAll('.dots button'));
-let activeIndex = 0;
-
 const io = new IntersectionObserver((entries) => {
   for (const en of entries) {
     if (!en.isIntersecting) continue;
     const idx = Number(en.target.dataset.index);
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-    if (idx === activeIndex) continue;
-    if (morphing) { queuedIndex = idx; continue; }
-    activeIndex = idx;
-    startMorph(idx);
+    goToSection(idx);
   }
 }, { threshold: 0.5 });
 sections.forEach(s => io.observe(s));
@@ -414,37 +659,29 @@ dots.forEach((d, i) => d.addEventListener('click', () =>
 ));
 if (dots.length) dots[0].classList.add('active');
 
-/* ============================== pointer ============================== */
-const raycaster = new THREE.Raycaster();
-const ndc = new THREE.Vector2(0, 0);
-const mouseWorld = new THREE.Vector3(0, 0, -10);
-const parTarget = { x: 0, y: 0 };
-let lastMove = -1e9;
-let repelCur = 0;
-
-window.addEventListener('pointermove', (e) => {
-  ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
-  ndc.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  parTarget.x = ndc.x * 1.2;
-  parTarget.y = ndc.y * 1.2;
-  raycaster.setFromCamera(ndc, camera);
-  const o = raycaster.ray.origin, dir = raycaster.ray.direction;
-  if (Math.abs(dir.z) > 1e-6) {
-    const t = -o.z / dir.z;
-    if (t > 0) mouseWorld.copy(o).addScaledVector(dir, t);
-  }
-  uniforms.uMouse.value.copy(mouseWorld);
-  lastMove = performance.now();
-}, { passive: true });
-
 /* ============================== resize ============================== */
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, TIERS[tier].dpr));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
 });
+
+/* ============================== adaptive quality ============================== */
+let emaDt = 1 / 60, slowFrames = 0;
+function autoQuality(dt) {
+  emaDt = emaDt * 0.95 + dt * 0.05;
+  if (emaDt > 1 / 38) slowFrames++;
+  else slowFrames = Math.max(0, slowFrames - 2);
+  if (slowFrames > 140 && tier < TIERS.length - 1) {
+    tier++;
+    slowFrames = 0;
+    const n = TIERS[tier].n;
+    sphereGeo.instanceCount = n;
+    blobGeo.instanceCount = n;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, TIERS[tier].dpr));
+  }
+}
 
 /* ============================== main loop ============================== */
 const clock = new THREE.Clock();
@@ -454,7 +691,7 @@ function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
   if (!reducedMotion) {
-    uniforms.uTime.value += dt;
+    sphereUniforms.uTime.value += dt;
     if (morphing) {
       morphT += dt / MORPH_DUR;
       if (morphT >= 1) {
@@ -462,24 +699,26 @@ function animate() {
         if (queuedIndex >= 0 && queuedIndex !== activeIndex) {
           const q = queuedIndex; queuedIndex = -1;
           activeIndex = q;
+          lightTarget = q;
           startMorph(q);
         } else { queuedIndex = -1; }
       }
       curEased = easeInOutCubic(morphT);
-      uniforms.uProgress.value = curEased;
+      sphereUniforms.uProgress.value = curEased;
     }
-    const want = (performance.now() - lastMove < 600) ? 1 : 0;
-    repelCur += (want - repelCur) * Math.min(1, dt * 6);
-    uniforms.uRepel.value = repelCur;
-    camera.position.x += (parTarget.x - camera.position.x) * Math.min(1, dt * 3);
-    camera.position.y += (parTarget.y - camera.position.y) * Math.min(1, dt * 3);
-    camera.lookAt(0, 0, 0);
+    applyLighting(dt);
+    autoQuality(dt);
+  } else {
+    applyLighting(1); // settle lighting instantly under reduced motion
   }
   renderer.render(scene, camera);
   if (firstFrame) {
     firstFrame = false;
     window.__booted = true;
     loader.classList.add('hidden');
+    // Intro: the field gathers into the name — the heading "emerges".
+    if (!reducedMotion) { morphing = true; morphT = 0; }
+    else { sphereUniforms.uProgress.value = 1; }
   }
 }
 animate();
