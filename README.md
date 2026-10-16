@@ -4,6 +4,7 @@
 
 **Full-Stack Developer — 10+ years turning business problems into shipped software.**
 
+✨ [View the interactive 3D version](https://muse.ai/s/interactive-3d-portfolio-xpxm6qxaxfcxpxfxit)
 
 [Get in touch](#contact) · [LinkedIn](https://www.linkedin.com/in/adeeluddin01) · [See featured work](#featured-work)
 
