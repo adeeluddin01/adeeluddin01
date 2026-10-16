@@ -18,6 +18,23 @@
     position:fixed; inset:0; z-index:1; pointer-events:none;
     background:radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(2,4,10,.62) 100%);
   }
+  /* Loading + error overlays: the page is never a mysterious black void. */
+  #loader, #errbox {
+    position:fixed; inset:0; z-index:10; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:1rem; text-align:center;
+    background:var(--bg); transition:opacity .6s ease; padding:2rem;
+  }
+  #loader.hidden, #errbox.hidden { opacity:0; pointer-events:none; }
+  #errbox { display:none; }
+  #errbox.show { display:flex; }
+  .spin {
+    width:46px; height:46px; border-radius:50%;
+    border:2px solid rgba(255,217,122,.18); border-top-color:var(--gold);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #loader p, #errbox p { color:var(--muted); font-size:.85rem; letter-spacing:.14em; margin:0; }
+  #errbox h2 { color:var(--ink); font-size:1.1rem; margin:0; letter-spacing:.06em; }
   main { position:relative; z-index:2; }
   section {
     min-height:100vh; min-height:100svh;
@@ -29,47 +46,42 @@
   section a:hover { border-bottom-color:var(--gold); }
   .cap { max-width:320px; font-size:.85rem; }
   .cap .eyebrow { font-size:.62rem; letter-spacing:.28em; color:rgba(154,149,138,.75);
-    margin:0 0 .5rem; }
-  .cap .role, .cap .about { font-size:.85rem; letter-spacing:.06em; text-transform:none;
-    color:rgba(236,231,217,.55); text-shadow:none; line-height:1.65; margin:0; }
-  .cap .scroll-hint { margin-top:1.2rem; font-size:.68rem; letter-spacing:.22em; }
-  .cap .chips { justify-content:flex-start; margin-top:.9rem; gap:.45rem; }
-  .cap .chip { font-size:.68rem; letter-spacing:.08em; padding:.32rem .7rem; }
-  .cap .work-list { font-size:.85rem; text-shadow:none; color:rgba(236,231,217,.6);
-    margin:.8rem 0 0; }
-  .cap .work-list .sub { font-size:.75rem; }
-  .cap .contact-links { justify-content:flex-start; gap:1rem; margin-top:.9rem;
-    font-size:.85rem; }
-  .eyebrow { font-size:.72rem; letter-spacing:.35em; text-transform:uppercase;
-    color:var(--muted); margin:0 0 1rem; }
-  .role { font-size:clamp(1rem,2.4vw,1.35rem); letter-spacing:.18em; text-transform:uppercase;
-    color:var(--ink); text-shadow:0 2px 18px rgba(0,0,0,.8); margin:0; }
-  .scroll-hint { margin-top:3rem; color:var(--muted); font-size:.8rem; letter-spacing:.25em;
-    text-transform:uppercase; animation:hint 2.2s ease-in-out infinite; }
+    margin:0 0 .5rem; text-transform:uppercase; }
+  .cap .role, .cap .about { font-size:.85rem; letter-spacing:.06em; color:rgba(236,231,217,.55);
+    line-height:1.65; margin:0; }
+  .cap .scroll-hint { margin-top:1.2rem; font-size:.68rem; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--muted); animation:hint 2.2s ease-in-out infinite; }
   @keyframes hint { 0%,100%{opacity:.35; transform:translateY(0)} 50%{opacity:.9; transform:translateY(8px)} }
-  .about { font-size:clamp(1.05rem,2.6vw,1.5rem); line-height:1.65; color:var(--ink);
-    text-shadow:0 2px 18px rgba(0,0,0,.85); margin:0; }
-  .chips { display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; margin-top:1.4rem; }
-  .chip { font-size:.82rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);
-    border:1px solid rgba(255,217,122,.35); border-radius:999px; padding:.45rem 1rem;
+  .cap .chips { display:flex; flex-wrap:wrap; justify-content:flex-start; margin-top:.9rem; gap:.45rem; }
+  .cap .chip { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink);
+    border:1px solid rgba(255,217,122,.35); border-radius:999px; padding:.32rem .7rem;
     background:rgba(5,8,16,.45); }
-  .work-list { list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:.7rem; font-size:1.05rem;
-    text-shadow:0 2px 14px rgba(0,0,0,.85); }
-  .work-list .sub { color:var(--muted); font-size:.9rem; }
-  .contact-links { display:flex; gap:1.6rem; justify-content:center; margin-top:1.4rem;
-    font-size:1rem; flex-wrap:wrap; }
+  .cap .work-list { list-style:none; padding:0; margin:.8rem 0 0; display:grid; gap:.7rem;
+    font-size:.85rem; color:rgba(236,231,217,.6); }
+  .cap .work-list .sub { font-size:.75rem; color:var(--muted); }
+  .cap .contact-links { display:flex; gap:1rem; margin-top:.9rem; font-size:.85rem; flex-wrap:wrap; }
   .dots { position:fixed; right:1.1rem; top:50%; transform:translateY(-50%); z-index:3;
     display:flex; flex-direction:column; gap:.7rem; }
   .dots button { width:9px; height:9px; border-radius:50%; border:1px solid rgba(255,217,122,.6);
     background:transparent; padding:0; cursor:pointer; }
   .dots button.active { background:var(--gold); }
   @media (max-width:640px){ .dots{ right:.6rem; } }
-  @media (prefers-reduced-motion: reduce){ .scroll-hint{ animation:none; } html{ scroll-behavior:auto; } }
+  @media (prefers-reduced-motion: reduce){ .cap .scroll-hint{ animation:none; } html{ scroll-behavior:auto; } }
 </style>
 </head>
 <body>
 <canvas id="gl"></canvas>
 <div class="vignette"></div>
+
+<div id="loader" role="status">
+  <div class="spin"></div>
+  <p>FORGING 60,000 MAGNETS&hellip;</p>
+</div>
+<div id="errbox" role="alert">
+  <h2>3D could not start</h2>
+  <p id="errmsg">Your browser blocked the 3D engine.</p>
+  <p><a href="https://github.com/adeeluddin01" style="color:var(--gold)">Continue to GitHub profile &rarr;</a></p>
+</div>
 
 <nav class="dots" aria-label="Sections">
   <button aria-label="Intro"></button>
@@ -88,7 +100,6 @@
       <p class="scroll-hint">Scroll</p>
     </div>
   </section>
-
   <section data-index="1">
     <div class="cap">
       <p class="eyebrow">About</p>
@@ -96,7 +107,6 @@
         from intuitive interfaces to backend systems, APIs, databases, and complete application workflows.</p>
     </div>
   </section>
-
   <section data-index="2">
     <div class="cap">
       <p class="eyebrow">Stack</p>
@@ -108,7 +118,6 @@
       </div>
     </div>
   </section>
-
   <section data-index="3">
     <div class="cap">
       <p class="eyebrow">3D &amp; Engineering</p>
@@ -116,7 +125,6 @@
         shipped for banks, startups, and product teams.</p>
     </div>
   </section>
-
   <section data-index="4">
     <div class="cap">
       <p class="eyebrow">Selected Work</p>
@@ -128,7 +136,6 @@
       <p style="margin-top:1.2rem;"><a href="https://github.com/adeeluddin01">More on GitHub</a></p>
     </div>
   </section>
-
   <section data-index="5">
     <div class="cap">
       <p class="eyebrow">Contact</p>
@@ -141,33 +148,66 @@
   </section>
 </main>
 
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
-
 <script type="module">
-import * as THREE from 'three';
+/* =====================================================================
+   Boot with resilience: try multiple CDNs for the Three.js engine, and
+   never leave the visitor staring at a black void — loading and error
+   states are explicit.
+   ===================================================================== */
+const loader = document.getElementById('loader');
+const errbox = document.getElementById('errbox');
+const errmsg = document.getElementById('errmsg');
+function showError(msg) {
+  loader.classList.add('hidden');
+  errmsg.textContent = msg;
+  errbox.classList.add('show');
+}
+window.addEventListener('error', (e) => {
+  if (!window.__booted) showError('Something failed while starting 3D: ' + (e.message || 'unknown error'));
+});
+
+const CDNS = [
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js',
+  'https://unpkg.com/three@0.160.0/build/three.module.js',
+  'https://esm.sh/three@0.160.0'
+];
+let THREE = null, cdnUsed = '';
+for (const url of CDNS) {
+  try { THREE = await import(url); cdnUsed = url; break; }
+  catch (e) { /* try next CDN */ }
+}
+if (!THREE) { showError('Could not load the 3D engine (network blocked all CDNs). Check your connection and reload.'); throw new Error('CDN failed'); }
 
 /* ============================== config ============================== */
-const N = 60000; // particle count — tweak freely
+const N = 60000;
 const WORDS = [
-  "ADEEL UDDIN",
-  "FULL-STACK DEVELOPER",
-  "REACT \u2022 NEXT.JS \u2022 DJANGO",
-  "THREE.JS \u2022 WEBGL \u2022 DOCKER",
-  "GARAGEPAL \u2022 SAUDIPAK \u2022 KARIGHAR",
+  'ADEEL UDDIN',
+  'FULL-STACK DEVELOPER',
+  'REACT \u2022 NEXT.JS \u2022 DJANGO',
+  'THREE.JS \u2022 WEBGL \u2022 DOCKER',
+  'GARAGEPAL \u2022 SAUDIPAK \u2022 KARIGHAR',
   "LET'S BUILD SOMETHING"
 ];
 const BG = new THREE.Color(0x050810);
-const MORPH_DUR = 1.8; // seconds per word morph
+const MORPH_DUR = 1.8;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ============================== renderer ============================== */
 const canvas = document.getElementById('gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+} catch (e) {
+  showError('WebGL is unavailable in this browser, so the 3D scene cannot start.');
+  throw e;
+}
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(BG, 1);
+renderer.domElement.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  showError('The graphics context was lost. Reload the page to restart the 3D scene.');
+});
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
@@ -177,7 +217,7 @@ camera.position.set(0, 0, 26);
 const sampleCanvas = document.createElement('canvas');
 sampleCanvas.width = 1400;
 sampleCanvas.height = 400;
-const sctx = sampleCanvas.getContext('2d', { willReadFrequently:true });
+const sctx = sampleCanvas.getContext('2d', { willReadFrequently: true });
 
 function sampleWord(text) {
   const W = sampleCanvas.width, H = sampleCanvas.height;
@@ -205,20 +245,18 @@ function sampleWord(text) {
     let X, Y;
     if (M === 0) { X = Math.random() * W; Y = Math.random() * H; }
     else { const j = Math.floor((i * M) / N); X = px[j]; Y = py[j]; }
-    out[i * 3]     = (X / W) * 28 - 14;   // world x: -14..14
-    out[i * 3 + 1] = 4 - (Y / H) * 8;     // world y: -4..4 (y flipped)
+    out[i * 3]     = (X / W) * 28 - 14;
+    out[i * 3 + 1] = 4 - (Y / H) * 8;
     out[i * 3 + 2] = (Math.random() - 0.5) * 1.0;
   }
   return out;
 }
-
-// Precompute every formation once (kept pristine; morphs copy from these).
 const formations = WORDS.map(sampleWord);
 
 /* ============================== attributes ============================== */
-const GOLD  = [1.0, 0.851, 0.478];  // #ffd97a
-const WHITE = [1.0, 0.965, 0.910];  // #fff6e8
-const CYAN  = [0.478, 0.886, 1.0];  // #7ae2ff
+const GOLD  = [1.0, 0.851, 0.478];
+const WHITE = [1.0, 0.965, 0.910];
+const CYAN  = [0.478, 0.886, 1.0];
 
 const delayArr = new Float32Array(N);
 const colorArr = new Float32Array(N * 3);
@@ -289,8 +327,8 @@ void main() {
   float spec = pow(max(dot(n, H), 0.0), 48.0);
   float rim = pow(1.0 - n.z, 3.0);
   vec3 col = vColor * (0.25 + 0.75 * diff) + spec * vec3(1.0) + rim * uRimColor * 0.35;
-  col *= 0.55 + 0.45 * n.z;                       // silhouette darkening -> roundness
-  col = mix(col, uBgColor, smoothstep(24.0, 36.0, vDepth));  // depth fog
+  col *= 0.55 + 0.45 * n.z;
+  col = mix(col, uBgColor, smoothstep(24.0, 36.0, vDepth));
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -307,27 +345,24 @@ const uniforms = {
 
 const mat = new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader });
 const points = new THREE.Points(geo, mat);
-points.frustumCulled = false; // positions move in the shader
+points.frustumCulled = false;
 scene.add(points);
 
 /* ============================== morph state machine ============================== */
 let morphing = false;
 let morphT = 1;
-let curEased = 1; // JS mirror of the eased uProgress
+let curEased = 1;
+let queuedIndex = -1;
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
-
-// Replicates the vertex shader's double-smoothed easing on the CPU so a
-// mid-flight morph can bake the exact currently-displayed positions (no pops).
 function sstepJS(e0, e1, x) {
   let t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
-  t = t * t * (3 - 2 * t); // GLSL smoothstep's internal curve
-  t = t * t * (3 - 2 * t); // the extra manual smootherstep in the shader
+  t = t * t * (3 - 2 * t);
+  t = t * t * (3 - 2 * t);
   return t;
 }
-
 function bakeCurrentPositions() {
   const pos = geo.attributes.position.array;
   const tgt = geo.attributes.aTargetB.array;
@@ -340,7 +375,6 @@ function bakeCurrentPositions() {
   }
   geo.attributes.position.needsUpdate = true;
 }
-
 function startMorph(wordIndex) {
   bakeCurrentPositions();
   geo.attributes.aTargetB.array.set(formations[wordIndex]);
@@ -360,15 +394,13 @@ const sections = Array.from(document.querySelectorAll('section[data-index]'));
 const dots = Array.from(document.querySelectorAll('.dots button'));
 let activeIndex = 0;
 
-let queuedIndex = -1; // latest section requested while a morph is running
-
 const io = new IntersectionObserver((entries) => {
   for (const en of entries) {
     if (!en.isIntersecting) continue;
     const idx = Number(en.target.dataset.index);
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     if (idx === activeIndex) continue;
-    if (morphing) { queuedIndex = idx; continue; } // remember latest only, no stacked morphs
+    if (morphing) { queuedIndex = idx; continue; }
     activeIndex = idx;
     startMorph(idx);
   }
@@ -413,6 +445,7 @@ window.addEventListener('resize', () => {
 
 /* ============================== main loop ============================== */
 const clock = new THREE.Clock();
+let firstFrame = true;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -426,7 +459,7 @@ function animate() {
         if (queuedIndex >= 0 && queuedIndex !== activeIndex) {
           const q = queuedIndex; queuedIndex = -1;
           activeIndex = q;
-          startMorph(q); // jump to the latest requested section, no dropped intent
+          startMorph(q);
         } else { queuedIndex = -1; }
       }
       curEased = easeInOutCubic(morphT);
@@ -440,6 +473,11 @@ function animate() {
     camera.lookAt(0, 0, 0);
   }
   renderer.render(scene, camera);
+  if (firstFrame) {
+    firstFrame = false;
+    window.__booted = true;
+    loader.classList.add('hidden');
+  }
 }
 animate();
 </script>
