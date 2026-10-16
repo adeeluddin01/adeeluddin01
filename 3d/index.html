@@ -21,13 +21,25 @@
   main { position:relative; z-index:2; }
   section {
     min-height:100vh; min-height:100svh;
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:2rem 1.25rem; pointer-events:none;
+    display:flex; align-items:flex-end; justify-content:flex-start; text-align:left;
+    padding:0 1.5rem 2.5rem; pointer-events:none;
   }
   section a { pointer-events:auto; color:var(--gold); text-decoration:none;
     border-bottom:1px solid rgba(255,217,122,.4); }
   section a:hover { border-bottom-color:var(--gold); }
-  .cap { max-width:680px; }
+  .cap { max-width:320px; font-size:.85rem; }
+  .cap .eyebrow { font-size:.62rem; letter-spacing:.28em; color:rgba(154,149,138,.75);
+    margin:0 0 .5rem; }
+  .cap .role, .cap .about { font-size:.85rem; letter-spacing:.06em; text-transform:none;
+    color:rgba(236,231,217,.55); text-shadow:none; line-height:1.65; margin:0; }
+  .cap .scroll-hint { margin-top:1.2rem; font-size:.68rem; letter-spacing:.22em; }
+  .cap .chips { justify-content:flex-start; margin-top:.9rem; gap:.45rem; }
+  .cap .chip { font-size:.68rem; letter-spacing:.08em; padding:.32rem .7rem; }
+  .cap .work-list { font-size:.85rem; text-shadow:none; color:rgba(236,231,217,.6);
+    margin:.8rem 0 0; }
+  .cap .work-list .sub { font-size:.75rem; }
+  .cap .contact-links { justify-content:flex-start; gap:1rem; margin-top:.9rem;
+    font-size:.85rem; }
   .eyebrow { font-size:.72rem; letter-spacing:.35em; text-transform:uppercase;
     color:var(--muted); margin:0 0 1rem; }
   .role { font-size:clamp(1rem,2.4vw,1.35rem); letter-spacing:.18em; text-transform:uppercase;
@@ -147,7 +159,7 @@ const WORDS = [
   "LET'S BUILD SOMETHING"
 ];
 const BG = new THREE.Color(0x050810);
-const MORPH_DUR = 2.4; // seconds per word morph
+const MORPH_DUR = 1.8; // seconds per word morph
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ============================== renderer ============================== */
@@ -212,11 +224,11 @@ const delayArr = new Float32Array(N);
 const colorArr = new Float32Array(N * 3);
 const sizeArr  = new Float32Array(N);
 for (let i = 0; i < N; i++) {
-  delayArr[i] = Math.random() * 0.65;
+  delayArr[i] = Math.random() * 0.35;
   const r = Math.random();
   const c = r < 0.70 ? GOLD : (r < 0.92 ? WHITE : CYAN);
   colorArr[i * 3] = c[0]; colorArr[i * 3 + 1] = c[1]; colorArr[i * 3 + 2] = c[2];
-  sizeArr[i] = 1.5 + Math.random() * 2.5;
+  sizeArr[i] = 2.5 + Math.random() * 3.0;
 }
 
 const geo = new THREE.BufferGeometry();
@@ -243,14 +255,14 @@ void main() {
   float t = smoothstep(aDelay, aDelay + 0.35, uProgress);
   t = t * t * (3.0 - 2.0 * t);
   vec3 pos = mix(position, aTargetB, t);
-  pos += 0.06 * vec3(
+  pos += 0.012 * vec3(
     sin(uTime * 0.7 + aDelay * 40.0),
     cos(uTime * 0.6 + aDelay * 31.0),
     sin(uTime * 0.5 + aDelay * 23.0)
   );
   vec3 dm = pos - uMouse;
   float dist = length(dm);
-  pos += normalize(dm + vec3(0.0001)) * (1.0 - smoothstep(0.0, 2.5, dist)) * 0.9 * uRepel;
+  pos += normalize(dm + vec3(0.0001)) * (1.0 - smoothstep(0.0, 1.4, dist)) * 0.35 * uRepel;
   vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mvPosition;
   gl_PointSize = aSize * uPixelRatio * (90.0 / -mvPosition.z);
@@ -333,7 +345,7 @@ function startMorph(wordIndex) {
   bakeCurrentPositions();
   geo.attributes.aTargetB.array.set(formations[wordIndex]);
   geo.attributes.aTargetB.needsUpdate = true;
-  for (let i = 0; i < N; i++) delayArr[i] = Math.random() * 0.65;
+  for (let i = 0; i < N; i++) delayArr[i] = Math.random() * 0.35;
   geo.attributes.aDelay.needsUpdate = true;
   if (reducedMotion) {
     morphT = 1; curEased = 1; morphing = false;
@@ -348,12 +360,17 @@ const sections = Array.from(document.querySelectorAll('section[data-index]'));
 const dots = Array.from(document.querySelectorAll('.dots button'));
 let activeIndex = 0;
 
+let queuedIndex = -1; // latest section requested while a morph is running
+
 const io = new IntersectionObserver((entries) => {
   for (const en of entries) {
     if (!en.isIntersecting) continue;
     const idx = Number(en.target.dataset.index);
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-    if (idx !== activeIndex) { activeIndex = idx; startMorph(idx); }
+    if (idx === activeIndex) continue;
+    if (morphing) { queuedIndex = idx; continue; } // remember latest only, no stacked morphs
+    activeIndex = idx;
+    startMorph(idx);
   }
 }, { threshold: 0.5 });
 sections.forEach(s => io.observe(s));
@@ -404,11 +421,18 @@ function animate() {
     uniforms.uTime.value += dt;
     if (morphing) {
       morphT += dt / MORPH_DUR;
-      if (morphT >= 1) { morphT = 1; morphing = false; }
+      if (morphT >= 1) {
+        morphT = 1; morphing = false;
+        if (queuedIndex >= 0 && queuedIndex !== activeIndex) {
+          const q = queuedIndex; queuedIndex = -1;
+          activeIndex = q;
+          startMorph(q); // jump to the latest requested section, no dropped intent
+        } else { queuedIndex = -1; }
+      }
       curEased = easeInOutCubic(morphT);
       uniforms.uProgress.value = curEased;
     }
-    const want = (performance.now() - lastMove < 1200) ? 1 : 0;
+    const want = (performance.now() - lastMove < 600) ? 1 : 0;
     repelCur += (want - repelCur) * Math.min(1, dt * 6);
     uniforms.uRepel.value = repelCur;
     camera.position.x += (parTarget.x - camera.position.x) * Math.min(1, dt * 3);
