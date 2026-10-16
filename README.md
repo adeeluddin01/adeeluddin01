@@ -1,143 +1,90 @@
+<img src="assets/hero.gif" alt="Animated particle hero — thousands of shining particles converging to form Adeel Uddin's name" width="100%">
+
 # Hi, I'm Adeel Uddin
 
-**Full-Stack Developer — 10+ years building software.** I build practical, scalable software that solves real business problems: from intuitive user interfaces to backend systems, APIs, databases, and complete application workflows.
+**Full-Stack Developer — 10+ years turning business problems into shipped software.**
 
-[Get in touch](#contact) · [LinkedIn](https://www.linkedin.com/in/adeeluddin01) · [See featured work](#featured-projects)
+
+[Get in touch](#contact) · [LinkedIn](https://www.linkedin.com/in/adeeluddin01) · [See featured work](#featured-work)
 
 ---
 
 ## About
 
-I'm a full-stack developer with 10+ years of experience building software, working primarily with TypeScript, Next.js, and Supabase — and 50+ custom WordPress websites delivered end to end. I've been around computers since 2007, and I bring that same long-term curiosity to client work: I care about the business problem first and the framework second.
+I'm a full-stack developer with 10+ years of experience across web apps, SaaS platforms, mobile (React Native), real-time 3D (WebGL/Three.js), and banking automation. I've built a vault management system inside a bank, a real-time 3D marketing website, multi-tenant SaaS for garages and office buildings, and 50+ custom WordPress sites. The range is the point: I care about the business problem first and the framework second.
 
-My strongest work is taking a rough idea — a booking flow, a marketplace, an internal operations tool — and carrying it through architecture, implementation, and deployment until it's actually running and usable. I'm comfortable owning the whole loop: requirements, data model, API, interface, auth and permissions, testing, and the unglamorous maintenance that keeps software alive after launch.
-
-The WordPress track record taught me something frameworks don't: most business software lives or dies on the boring parts — reliable hosting, clean data, fast pages, and someone who answers when it breaks. I bring that operations mindset to every project, whether it's WordPress or a custom SaaS build.
-
-I work best with clients who can describe the outcome they want and let me handle the engineering to get there.
+I own the whole loop — requirements, data model, API, interface, auth and permissions, testing, and the unglamorous maintenance that keeps software alive after launch. I work best with clients who can describe the outcome they want and let me handle the engineering to get there.
 
 ---
 
-## Technical expertise
+## Tech stack
 
-Everything below is backed by shipped code in my repositories — no padding.
+**Frontend:** `React` `Next.js` `Angular` `React Native` `CSS`
 
-**Languages:** TypeScript, JavaScript, SQL
+**Backend:** `Node.js` `Express` `Python` `Django` `PHP` `Laravel`
 
-**Frontend:** React 19, Next.js 16 (App Router), Tailwind CSS 4, Progressive Web Apps
+**Data & Auth:** `SQL` `JWT`
 
-**Backend:** Node.js, Supabase (Auth, Realtime, Storage, Postgres)
+**3D & Interactive:** `Three.js` `WebGL`
 
-**Databases:** PostgreSQL — schema design, migrations, Row-Level Security policies
+**Tools & QA:** `Docker` `Git` `Playwright` `Axios`
 
-**APIs & integrations:** REST API design, Google Maps Platform, Google OAuth 2.0
-
-**Tooling:** Git, npm, Vercel
-
-**Testing & deployment:** Vitest (unit tests), Playwright (end-to-end tests), production deploys on Vercel
-
-*Currently studying: Python API development (FastAPI) and ORM patterns — personal learning, not client work yet.*
+**AI/ML:** `PyTorch`
 
 ---
 
-## Featured projects
+## Experience
+
+- **UBL — United Bank Limited** · Senior Officer, Automation · *Dec 2025 – Present*
+  Building a Vault Management System and RPA automations that turn manual, error-prone banking operations into reliable software-driven processes.
+- **GForge** · Full Stack Developer · *Aug 2025 – Dec 2025*
+  Built and optimized a real-time 3D website with WebGL and Three.js, developed AI-driven 3D tools for product marketing, and improved 3D asset pipelines for faster loads and renders across platforms.
+- **Nexifies** · Full Stack Developer · *Oct 2024 – Jul 2025*
+  Shipped two production systems: **GaragePal**, a SaaS platform for managing multiple automobile garages with AI-assisted booking, multi-role access, service management and invoicing; and **SaudiPak**, an office rental management system covering complaints, job slips and attendance, with AI for predictive maintenance and reporting.
+- **EvolTech** · React/Next.js Developer · *Feb 2024 – Present*
+  Frontend and backend delivery — API integration, responsive UI, secure authentication, and SEO-optimized, scalable builds.
+- **Mod Adventures** · React Developer · *Dec 2023 – Nov 2024*
+  Translated Figma concepts into pixel-perfect React components; earlier WordPress work (2023) customizing themes and plugins and handling Figma-to-theme builds for client deliveries.
+- **ShafTech** · CIT Instructor · *Mar 2023 – May 2024*
+  Taught Java, C, C++, C#, RDBMS and networking — learning to explain complex systems simply, a skill that carries directly into client work.
+- **Saiyan's Watch** · Full Stack Developer · *Mar 2016 – Dec 2019*
+  Sole developer — designed custom themes and features carrying the company's online presence.
+
+---
+
+## Featured work
 
 ### Karighar — on-demand home-services marketplace
 
-A complete marketplace connecting customers with verified home-service providers across Karachi: customers book services, providers get verified and accept jobs, and an admin oversees the whole operation.
-
-**The problem it solves.** Booking home services — AC repair, plumbing, electrical work — typically runs on phone calls and WhatsApp: no verified providers, no price transparency, no way to track a job once it's booked.
-
-**What was built.** A web-first PWA with three roles (customer, provider, admin), email + Google OAuth sign-in, a full booking flow with fixed-price and custom jobs, provider onboarding with CNIC verification, live job-status updates, in-app chat, live provider location tracking, ratings and reviews, cash-on-delivery with a commission ledger, a provider earnings wallet, dispute handling, notifications, and an admin panel covering verification, catalog, jobs, settlements, and disputes. The database is managed as 15 versioned SQL migrations with Row-Level Security throughout.
-
-**My contribution.** I authored 14 of the 21 commits in this repository, with feature work across the booking flow, the billing and commission logic, admin tooling, and the database migration chain. (Built on the open-source Karighar base by Matanza00, which I extended substantially.)
+A complete marketplace connecting customers with verified home-service providers across Karachi: customers book services, providers get verified and accept jobs, and an admin oversees the whole operation — three roles, email + Google OAuth sign-in, fixed-price and custom-job booking, provider onboarding with CNIC verification, live job-status updates, in-app chat, live provider location tracking, ratings and reviews, cash-on-delivery with a commission ledger, a provider earnings wallet, dispute handling, notifications, and a full admin panel. The database is managed as 15 versioned SQL migrations with Row-Level Security throughout.
 
 **Stack:** TypeScript · Next.js 16 · React 19 · Supabase (PostgreSQL) · Tailwind CSS 4 · Google Maps API · Vitest · Playwright
 
-**Explore it:**
+**Explore it:** [github.com/adeeluddin01/karighar](https://github.com/adeeluddin01/karighar) — the repo README walks through Supabase setup (one SQL file seeds the whole schema), `videos/` has recorded walkthroughs of the customer, provider, and admin flows, and `npm test` runs the Vitest suite covering the money/accounting logic and the job-status state machine.
 
-```bash
-git clone https://github.com/adeeluddin01/karighar.git
-cd karighar
-npm install
-npm run dev
-```
+**Honest note:** the public demo deployment is currently offline, so run it locally to see it working.
 
-The repo README walks through the Supabase setup (one SQL file seeds the whole schema), and `videos/` contains recorded walkthroughs of the customer, provider, and admin flows. `npm test` runs the Vitest suite covering the money/accounting logic and the job status state machine.
+### GaragePal — multi-garage management SaaS *(client work)*
 
-**Honest notes:** the public demo deployment is currently offline, so run it locally to see it working. Some roadmap items in the repo README (e.g. escrow payments, SMS OTP) are planned, not shipped.
+A SaaS platform for a Canadian client managing multiple automobile garages: garage operations and bookings unified across locations, with AI-assisted booking, multi-role access, service management, invoicing, and an owner-level view over every site. Implementation details stay private.
 
----
+### SaudiPak — office rental management system *(client work)*
 
-## Client work
+A building and office-management system for Islamabad operations: tenancy and space management, complaints, job slips, maintenance reporting and attendance with role-based access — plus AI-assisted predictive maintenance and reporting. Implementation details stay private.
 
-Selected client engagements. Implementation details stay private; what I can share is the problem, what was built, and what it changed.
+### GForge 3D website *(work at GForge)*
 
-### GaragePal — multi-garage management SaaS (Canada)
+A real-time 3D marketing website built with WebGL and Three.js, with AI-driven 3D tools for product marketing and automated model rendering, and optimized 3D performance and asset pipelines for efficient loading and rendering across platforms.
 
-**The problem.** A client operating multiple garages ran each location on disconnected processes — bookings, day-to-day operations, and owner oversight lived in separate workflows, so running several sites meant juggling systems that didn't talk to each other.
+### Vault Management System *(work at UBL)*
 
-**What was built.** A garage-management SaaS covering garage operations and bookings across multiple locations, with an owner-level view for overseeing every garage from one place.
-
-**The outcome.** One system for the whole operation: bookings and daily management unified per location, with consolidated oversight for the owner instead of a patchwork of disconnected tools.
-
-### SaudiPak — building & office management system (Islamabad)
-
-**The problem.** Office operations spanning tenancy, space management, complaints, job slips, and maintenance reporting were running on paper trails and ad-hoc messaging — requests had no tracking, no assignment, and no accountability once they left someone's inbox.
-
-**What was built.** A building and office-management system covering tenancy and space management, complaints, job slips, maintenance reporting, attendance, and role-based access for the teams who run the building day to day.
-
-**The outcome.** Complaints, job slips, and maintenance requests moved into one permissioned system — tracked from report to resolution, with clear ownership at every step.
+A vault management system plus RPA automations for banking operations — software taking over manual, high-stakes processes where accuracy matters.
 
 ---
 
-## Track record
+## Education
 
-- **50+ custom WordPress websites** — custom themes and custom functionality, from design through deployment to ongoing maintenance.
-- **Karighar** — full home-services marketplace PWA (featured above).
-- **GaragePal** — multi-location garage management SaaS for a Canadian client.
-- **SaudiPak** — building and office management system for Islamabad operations.
-
----
-
-## What I can build
-
-Services I offer — grounded in the engineering above, scoped honestly per project:
-
-- **Custom SaaS applications** — multi-user products with auth, roles, and billing-ready backends.
-- **Business management platforms** — CRMs, operations tools, and systems that run a business day-to-day.
-- **Internal dashboards & admin portals** — verification queues, catalogs, monitors, and reporting views.
-- **Booking & scheduling systems** — service booking, provider/customer matching, status tracking.
-- **Workflow & approval applications** — multi-step processes with roles, states, and audit trails.
-- **REST APIs & backend services** — clean endpoints, secure auth, well-designed data models.
-- **Database-driven applications** — PostgreSQL schemas, migrations, and Row-Level Security done right.
-- **AI-assisted business features** — practical additions like smart search, summarization, or assisted data entry inside business apps.
-- **Maintenance & improvement** — debugging, performance fixes, and feature work on existing applications.
-
----
-
-## Engineering principles
-
-- **Readable, maintainable code** — I write code the next developer can understand without a walkthrough.
-- **Secure authentication & authorization** — auth is designed up front, not bolted on; permissions enforced in the database, not just the UI.
-- **Clear application architecture** — features live where you'd expect to find them; structure follows the domain.
-- **Thoughtful database design** — the schema reflects the real business rules, with constraints that protect data integrity.
-- **Responsive, accessible interfaces** — software should work on a phone in the field, not just a desktop.
-- **Validation & error handling** — inputs are validated, failures are handled, users get useful messages.
-- **Useful documentation** — setup guides and READMEs that actually let someone run the project.
-- **Testing & reliable delivery** — automated tests for the logic that matters (money, state machines, permissions).
-- **Clear communication, realistic scope** — I'll tell you what something costs in time before we start, and flag trade-offs as they come up.
-
----
-
-## Activity
-
-<p>
-  <img src="https://github-readme-stats.vercel.app/api?username=adeeluddin01&show_icons=true&theme=github_dark&hide_border=true" alt="GitHub stats for adeeluddin01" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=adeeluddin01&layout=compact&theme=github_dark&hide_border=true" alt="Most used languages" />
-</p>
-
-*Live data from my public GitHub activity.*
+BBA, Karachi University *(in progress)* · Associate Degree in Commerce, Karachi University *(Jan 2025)* · ACCP Diploma, Aptech *(Dec 2024)*
 
 ---
 
