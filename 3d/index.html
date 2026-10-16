@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adeel Uddin — Interactive 3D</title>
+<style>
+  :root { --bg:#050810; --gold:#ffd97a; --ink:#ece7d9; --muted:#9a958a; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overflow-x:hidden;
+  }
+  #gl { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0; }
+  .vignette {
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(2,4,10,.62) 100%);
+  }
+  main { position:relative; z-index:2; }
+  section {
+    min-height:100vh; min-height:100svh;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:2rem 1.25rem; pointer-events:none;
+  }
+  section a { pointer-events:auto; color:var(--gold); text-decoration:none;
+    border-bottom:1px solid rgba(255,217,122,.4); }
+  section a:hover { border-bottom-color:var(--gold); }
+  .cap { max-width:680px; }
+  .eyebrow { font-size:.72rem; letter-spacing:.35em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 1rem; }
+  .role { font-size:clamp(1rem,2.4vw,1.35rem); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink); text-shadow:0 2px 18px rgba(0,0,0,.8); margin:0; }
+  .scroll-hint { margin-top:3rem; color:var(--muted); font-size:.8rem; letter-spacing:.25em;
+    text-transform:uppercase; animation:hint 2.2s ease-in-out infinite; }
+  @keyframes hint { 0%,100%{opacity:.35; transform:translateY(0)} 50%{opacity:.9; transform:translateY(8px)} }
+  .about { font-size:clamp(1.05rem,2.6vw,1.5rem); line-height:1.65; color:var(--ink);
+    text-shadow:0 2px 18px rgba(0,0,0,.85); margin:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; margin-top:1.4rem; }
+  .chip { font-size:.82rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);
+    border:1px solid rgba(255,217,122,.35); border-radius:999px; padding:.45rem 1rem;
+    background:rgba(5,8,16,.45); }
+  .work-list { list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:.7rem; font-size:1.05rem;
+    text-shadow:0 2px 14px rgba(0,0,0,.85); }
+  .work-list .sub { color:var(--muted); font-size:.9rem; }
+  .contact-links { display:flex; gap:1.6rem; justify-content:center; margin-top:1.4rem;
+    font-size:1rem; flex-wrap:wrap; }
+  .dots { position:fixed; right:1.1rem; top:50%; transform:translateY(-50%); z-index:3;
+    display:flex; flex-direction:column; gap:.7rem; }
+  .dots button { width:9px; height:9px; border-radius:50%; border:1px solid rgba(255,217,122,.6);
+    background:transparent; padding:0; cursor:pointer; }
+  .dots button.active { background:var(--gold); }
+  @media (max-width:640px){ .dots{ right:.6rem; } }
+  @media (prefers-reduced-motion: reduce){ .scroll-hint{ animation:none; } html{ scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="vignette"></div>
+
+<nav class="dots" aria-label="Sections">
+  <button aria-label="Intro"></button>
+  <button aria-label="About"></button>
+  <button aria-label="Stack"></button>
+  <button aria-label="Engineering"></button>
+  <button aria-label="Work"></button>
+  <button aria-label="Contact"></button>
+</nav>
+
+<main>
+  <section data-index="0">
+    <div class="cap">
+      <p class="eyebrow">Interactive 3D Portfolio</p>
+      <p class="role">Full-Stack Developer &mdash; 10+ years</p>
+      <p class="scroll-hint">Scroll</p>
+    </div>
+  </section>
+
+  <section data-index="1">
+    <div class="cap">
+      <p class="eyebrow">About</p>
+      <p class="about">I build practical, scalable software that solves real business problems &mdash;
+        from intuitive interfaces to backend systems, APIs, databases, and complete application workflows.</p>
+    </div>
+  </section>
+
+  <section data-index="2">
+    <div class="cap">
+      <p class="eyebrow">Stack</p>
+      <div class="chips">
+        <span class="chip">React</span><span class="chip">Next.js</span>
+        <span class="chip">Django</span><span class="chip">Laravel</span>
+        <span class="chip">Angular</span><span class="chip">React Native</span>
+        <span class="chip">Three.js</span><span class="chip">Docker</span>
+      </div>
+    </div>
+  </section>
+
+  <section data-index="3">
+    <div class="cap">
+      <p class="eyebrow">3D &amp; Engineering</p>
+      <p class="about">Real-time 3D, banking automation, and SaaS platforms &mdash;
+        shipped for banks, startups, and product teams.</p>
+    </div>
+  </section>
+
+  <section data-index="4">
+    <div class="cap">
+      <p class="eyebrow">Selected Work</p>
+      <ul class="work-list">
+        <li>GaragePal <span class="sub">&mdash; multi-garage SaaS</span></li>
+        <li>SaudiPak <span class="sub">&mdash; office management system</span></li>
+        <li>Karighar <span class="sub">&mdash; home-services marketplace</span></li>
+      </ul>
+      <p style="margin-top:1.2rem;"><a href="https://github.com/adeeluddin01">More on GitHub</a></p>
+    </div>
+  </section>
+
+  <section data-index="5">
+    <div class="cap">
+      <p class="eyebrow">Contact</p>
+      <p class="about">Have something to build? Let&rsquo;s talk.</p>
+      <div class="contact-links">
+        <a href="mailto:adeeluddin03@gmail.com">adeeluddin03@gmail.com</a>
+        <a href="https://www.linkedin.com/in/adeeluddin01">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================== config ============================== */
+const N = 60000; // particle count — tweak freely
+const WORDS = [
+  "ADEEL UDDIN",
+  "FULL-STACK DEVELOPER",
+  "REACT \u2022 NEXT.JS \u2022 DJANGO",
+  "THREE.JS \u2022 WEBGL \u2022 DOCKER",
+  "GARAGEPAL \u2022 SAUDIPAK \u2022 KARIGHAR",
+  "LET'S BUILD SOMETHING"
+];
+const BG = new THREE.Color(0x050810);
+const MORPH_DUR = 2.4; // seconds per word morph
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============================== renderer ============================== */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(BG, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
+camera.position.set(0, 0, 26);
+
+/* ============================== formation sampling ============================== */
+const sampleCanvas = document.createElement('canvas');
+sampleCanvas.width = 1400;
+sampleCanvas.height = 400;
+const sctx = sampleCanvas.getContext('2d', { willReadFrequently:true });
+
+function sampleWord(text) {
+  const W = sampleCanvas.width, H = sampleCanvas.height;
+  sctx.fillStyle = '#000';
+  sctx.fillRect(0, 0, W, H);
+  sctx.textAlign = 'center';
+  sctx.textBaseline = 'middle';
+  let size = 190;
+  const setFont = s => { sctx.font = '900 ' + s + 'px Arial, Helvetica, sans-serif'; };
+  setFont(size);
+  const maxW = W - 140;
+  while (sctx.measureText(text).width > maxW && size > 36) { size -= 8; setFont(size); }
+  sctx.fillStyle = '#fff';
+  sctx.fillText(text, W / 2, H / 2 + 6);
+  const img = sctx.getImageData(0, 0, W, H).data;
+  const px = [], py = [];
+  for (let y = 0; y < H; y += 2) {
+    for (let x = 0; x < W; x += 2) {
+      if (img[((y * W) + x) * 4 + 3] > 128) { px.push(x); py.push(y); }
+    }
+  }
+  const out = new Float32Array(N * 3);
+  const M = px.length;
+  for (let i = 0; i < N; i++) {
+    let X, Y;
+    if (M === 0) { X = Math.random() * W; Y = Math.random() * H; }
+    else { const j = Math.floor((i * M) / N); X = px[j]; Y = py[j]; }
+    out[i * 3]     = (X / W) * 28 - 14;   // world x: -14..14
+    out[i * 3 + 1] = 4 - (Y / H) * 8;     // world y: -4..4 (y flipped)
+    out[i * 3 + 2] = (Math.random() - 0.5) * 1.0;
+  }
+  return out;
+}
+
+// Precompute every formation once (kept pristine; morphs copy from these).
+const formations = WORDS.map(sampleWord);
+
+/* ============================== attributes ============================== */
+const GOLD  = [1.0, 0.851, 0.478];  // #ffd97a
+const WHITE = [1.0, 0.965, 0.910];  // #fff6e8
+const CYAN  = [0.478, 0.886, 1.0];  // #7ae2ff
+
+const delayArr = new Float32Array(N);
+const colorArr = new Float32Array(N * 3);
+const sizeArr  = new Float32Array(N);
+for (let i = 0; i < N; i++) {
+  delayArr[i] = Math.random() * 0.65;
+  const r = Math.random();
+  const c = r < 0.70 ? GOLD : (r < 0.92 ? WHITE : CYAN);
+  colorArr[i * 3] = c[0]; colorArr[i * 3 + 1] = c[1]; colorArr[i * 3 + 2] = c[2];
+  sizeArr[i] = 1.5 + Math.random() * 2.5;
+}
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position',  new THREE.BufferAttribute(new Float32Array(formations[0]), 3));
+geo.setAttribute('aTargetB',  new THREE.BufferAttribute(new Float32Array(formations[0]), 3));
+geo.setAttribute('aDelay',    new THREE.BufferAttribute(delayArr, 1));
+geo.setAttribute('aColor',    new THREE.BufferAttribute(colorArr, 3));
+geo.setAttribute('aSize',     new THREE.BufferAttribute(sizeArr, 1));
+
+/* ============================== shaders ============================== */
+const vertexShader = `
+attribute vec3 aTargetB;
+attribute float aDelay;
+attribute vec3 aColor;
+attribute float aSize;
+uniform float uProgress;
+uniform float uTime;
+uniform float uPixelRatio;
+uniform vec3 uMouse;
+uniform float uRepel;
+varying vec3 vColor;
+varying float vDepth;
+void main() {
+  float t = smoothstep(aDelay, aDelay + 0.35, uProgress);
+  t = t * t * (3.0 - 2.0 * t);
+  vec3 pos = mix(position, aTargetB, t);
+  pos += 0.06 * vec3(
+    sin(uTime * 0.7 + aDelay * 40.0),
+    cos(uTime * 0.6 + aDelay * 31.0),
+    sin(uTime * 0.5 + aDelay * 23.0)
+  );
+  vec3 dm = pos - uMouse;
+  float dist = length(dm);
+  pos += normalize(dm + vec3(0.0001)) * (1.0 - smoothstep(0.0, 2.5, dist)) * 0.9 * uRepel;
+  vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+  gl_Position = projectionMatrix * mvPosition;
+  gl_PointSize = aSize * uPixelRatio * (90.0 / -mvPosition.z);
+  vColor = aColor;
+  vDepth = -mvPosition.z;
+}
+`;
+
+const fragmentShader = `
+uniform vec3 uRimColor;
+uniform vec3 uBgColor;
+varying vec3 vColor;
+varying float vDepth;
+void main() {
+  vec2 pc = gl_PointCoord - vec2(0.5);
+  float d = length(pc);
+  if (d > 0.5) discard;
+  float zz = sqrt(max(0.0, 1.0 - 4.0 * d * d));
+  vec3 n = normalize(vec3(pc * 2.0, zz));
+  vec3 L = normalize(vec3(-0.5, 0.8, 0.6));
+  vec3 V = vec3(0.0, 0.0, 1.0);
+  float diff = max(dot(n, L), 0.0);
+  vec3 H = normalize(L + V);
+  float spec = pow(max(dot(n, H), 0.0), 48.0);
+  float rim = pow(1.0 - n.z, 3.0);
+  vec3 col = vColor * (0.25 + 0.75 * diff) + spec * vec3(1.0) + rim * uRimColor * 0.35;
+  col *= 0.55 + 0.45 * n.z;                       // silhouette darkening -> roundness
+  col = mix(col, uBgColor, smoothstep(24.0, 36.0, vDepth));  // depth fog
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+const uniforms = {
+  uProgress:  { value: 1.0 },
+  uTime:      { value: 0.0 },
+  uPixelRatio:{ value: Math.min(window.devicePixelRatio || 1, 2) },
+  uMouse:     { value: new THREE.Vector3(0, 0, -10) },
+  uRepel:     { value: 0.0 },
+  uRimColor:  { value: new THREE.Vector3(0.45, 0.60, 0.95) },
+  uBgColor:   { value: new THREE.Vector3(BG.r, BG.g, BG.b) }
+};
+
+const mat = new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader });
+const points = new THREE.Points(geo, mat);
+points.frustumCulled = false; // positions move in the shader
+scene.add(points);
+
+/* ============================== morph state machine ============================== */
+let morphing = false;
+let morphT = 1;
+let curEased = 1; // JS mirror of the eased uProgress
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// Replicates the vertex shader's double-smoothed easing on the CPU so a
+// mid-flight morph can bake the exact currently-displayed positions (no pops).
+function sstepJS(e0, e1, x) {
+  let t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
+  t = t * t * (3 - 2 * t); // GLSL smoothstep's internal curve
+  t = t * t * (3 - 2 * t); // the extra manual smootherstep in the shader
+  return t;
+}
+
+function bakeCurrentPositions() {
+  const pos = geo.attributes.position.array;
+  const tgt = geo.attributes.aTargetB.array;
+  for (let i = 0; i < N; i++) {
+    const t = sstepJS(delayArr[i], delayArr[i] + 0.35, curEased);
+    const i3 = i * 3;
+    pos[i3]     += (tgt[i3]     - pos[i3])     * t;
+    pos[i3 + 1] += (tgt[i3 + 1] - pos[i3 + 1]) * t;
+    pos[i3 + 2] += (tgt[i3 + 2] - pos[i3 + 2]) * t;
+  }
+  geo.attributes.position.needsUpdate = true;
+}
+
+function startMorph(wordIndex) {
+  bakeCurrentPositions();
+  geo.attributes.aTargetB.array.set(formations[wordIndex]);
+  geo.attributes.aTargetB.needsUpdate = true;
+  for (let i = 0; i < N; i++) delayArr[i] = Math.random() * 0.65;
+  geo.attributes.aDelay.needsUpdate = true;
+  if (reducedMotion) {
+    morphT = 1; curEased = 1; morphing = false;
+    uniforms.uProgress.value = 1;
+  } else {
+    morphT = 0; morphing = true;
+  }
+}
+
+/* ============================== scroll ============================== */
+const sections = Array.from(document.querySelectorAll('section[data-index]'));
+const dots = Array.from(document.querySelectorAll('.dots button'));
+let activeIndex = 0;
+
+const io = new IntersectionObserver((entries) => {
+  for (const en of entries) {
+    if (!en.isIntersecting) continue;
+    const idx = Number(en.target.dataset.index);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    if (idx !== activeIndex) { activeIndex = idx; startMorph(idx); }
+  }
+}, { threshold: 0.5 });
+sections.forEach(s => io.observe(s));
+dots.forEach((d, i) => d.addEventListener('click', () =>
+  sections[i].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })
+));
+if (dots.length) dots[0].classList.add('active');
+
+/* ============================== pointer ============================== */
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2(0, 0);
+const mouseWorld = new THREE.Vector3(0, 0, -10);
+const parTarget = { x: 0, y: 0 };
+let lastMove = -1e9;
+let repelCur = 0;
+
+window.addEventListener('pointermove', (e) => {
+  ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
+  ndc.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  parTarget.x = ndc.x * 1.2;
+  parTarget.y = ndc.y * 1.2;
+  raycaster.setFromCamera(ndc, camera);
+  const o = raycaster.ray.origin, dir = raycaster.ray.direction;
+  if (Math.abs(dir.z) > 1e-6) {
+    const t = -o.z / dir.z;
+    if (t > 0) mouseWorld.copy(o).addScaledVector(dir, t);
+  }
+  uniforms.uMouse.value.copy(mouseWorld);
+  lastMove = performance.now();
+}, { passive: true });
+
+/* ============================== resize ============================== */
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
+});
+
+/* ============================== main loop ============================== */
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (!reducedMotion) {
+    uniforms.uTime.value += dt;
+    if (morphing) {
+      morphT += dt / MORPH_DUR;
+      if (morphT >= 1) { morphT = 1; morphing = false; }
+      curEased = easeInOutCubic(morphT);
+      uniforms.uProgress.value = curEased;
+    }
+    const want = (performance.now() - lastMove < 1200) ? 1 : 0;
+    repelCur += (want - repelCur) * Math.min(1, dt * 6);
+    uniforms.uRepel.value = repelCur;
+    camera.position.x += (parTarget.x - camera.position.x) * Math.min(1, dt * 3);
+    camera.position.y += (parTarget.y - camera.position.y) * Math.min(1, dt * 3);
+    camera.lookAt(0, 0, 0);
+  }
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
