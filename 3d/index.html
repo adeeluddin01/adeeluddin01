@@ -234,9 +234,12 @@ function sampleWord(text) {
   sctx.fillText(text, W / 2, H / 2 + 6);
   const img = sctx.getImageData(0, 0, W, H).data;
   const px = [], py = [];
+  // NOTE: the canvas is filled with OPAQUE black first, so the alpha channel is
+  // 255 everywhere — we must test a COLOR channel (red) to find the white text.
+  // Testing alpha here used to scatter every sphere across the whole rectangle.
   for (let y = 0; y < H; y += 2) {
     for (let x = 0; x < W; x += 2) {
-      if (img[((y * W) + x) * 4 + 3] > 128) { px.push(x); py.push(y); }
+      if (img[((y * W) + x) * 4] > 128) { px.push(x); py.push(y); }
     }
   }
   const out = new Float32Array(N * 3);
