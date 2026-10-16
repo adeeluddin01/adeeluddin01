@@ -251,7 +251,8 @@ function makeStudioEnv() {
     x.shadowColor = color;
     x.shadowBlur = 60;
     x.beginPath();
-    x.roundRect(cx - w / 2, cy - h / 2, w, h, 24);
+    if (x.roundRect) x.roundRect(cx - w / 2, cy - h / 2, w, h, 24);
+    else x.rect(cx - w / 2, cy - h / 2, w, h);
     x.fill();
     x.restore();
   };
@@ -478,6 +479,11 @@ sphereGeo.setAttribute('aRand', new THREE.InstancedBufferAttribute(aRand, 1));
 sphereGeo.setAttribute('aScale', new THREE.InstancedBufferAttribute(aScale, 1));
 sphereGeo.setAttribute('aTint', new THREE.InstancedBufferAttribute(aTint, 3));
 sphereGeo.instanceCount = TIERS[tier].n;
+/* The blob mesh shares the same CPU arrays but needs its OWN attribute
+   objects (separate GL buffers) — keep references so both stay in sync. */
+const spherePosAAttr = sphereGeo.getAttribute('aPosA');
+const spherePosBAttr = sphereGeo.getAttribute('aPosB');
+const sphereDelayAttr = sphereGeo.getAttribute('aDelay');
 
 const sphereUniforms = {
   uProgress: { value: 0.0 },   // intro: field -> name assembles on load
@@ -549,6 +555,9 @@ blobGeo.setAttribute('aPosB', new THREE.InstancedBufferAttribute(aPosB, 3));
 blobGeo.setAttribute('aDelay', new THREE.InstancedBufferAttribute(aDelay, 1));
 blobGeo.setAttribute('aScale', new THREE.InstancedBufferAttribute(aScale, 1));
 blobGeo.instanceCount = TIERS[tier].n;
+const blobPosAAttr = blobGeo.getAttribute('aPosA');
+const blobPosBAttr = blobGeo.getAttribute('aPosB');
+const blobDelayAttr = blobGeo.getAttribute('aDelay');
 const blobUniforms = {
   uProgress: sphereUniforms.uProgress, // shared object: one timeline drives both
   uShadowOffset: { value: new THREE.Vector2(0.07, -0.09) },
@@ -604,8 +613,8 @@ function sstepJS(e0, e1, x) {
   return t;
 }
 function bakeCurrentPositions() {
-  const pos = sphereGeo.getAttribute('aPosA').array;
-  const tgt = sphereGeo.getAttribute('aPosB').array;
+  const pos = spherePosAAttr.array;
+  const tgt = spherePosBAttr.array;
   for (let i = 0; i < MAXN; i++) {
     const t = sstepJS(aDelay[i], aDelay[i] + 0.35, curEased);
     const i3 = i * 3;
@@ -613,15 +622,19 @@ function bakeCurrentPositions() {
     pos[i3 + 1] += (tgt[i3 + 1] - pos[i3 + 1]) * t;
     pos[i3 + 2] += (tgt[i3 + 2] - pos[i3 + 2]) * t;
   }
-  sphereGeo.getAttribute('aPosA').needsUpdate = true;
+  spherePosAAttr.needsUpdate = true;
+  blobPosAAttr.needsUpdate = true; // shared array, separate GL buffer
 }
 /* toWord: 0..5 index into WORDS. -1 not used here (field is boot-only). */
 function startMorph(wordIdx) {
   bakeCurrentPositions();
-  sphereGeo.getAttribute('aPosB').array.set(wordForms[wordIdx]);
-  sphereGeo.getAttribute('aPosB').needsUpdate = true;
+  spherePosBAttr.array.set(wordForms[wordIdx]);
+  spherePosBAttr.needsUpdate = true;
+  blobPosBAttr.array.set(wordForms[wordIdx]);
+  blobPosBAttr.needsUpdate = true;
   for (let i = 0; i < MAXN; i++) aDelay[i] = Math.random() * 0.4;
-  sphereGeo.getAttribute('aDelay').needsUpdate = true;
+  sphereDelayAttr.needsUpdate = true;
+  blobDelayAttr.needsUpdate = true;
   if (reducedMotion) {
     morphT = 1; curEased = 1; morphing = false;
     sphereUniforms.uProgress.value = 1;
