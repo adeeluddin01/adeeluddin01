@@ -1,100 +1,94 @@
 <img src="assets/hero.gif" alt="Animated particle hero — thousands of shining particles converging to form Adeel Uddin's name" width="100%">
 
-# Hi, I'm Adeel Uddin
+<h1 align="center">Hi, I'm Adeel Uddin</h1>
 
-**Full-Stack Developer — 10+ years turning business problems into shipped software.**
+<p align="center"><strong>Full-Stack Developer — 10+ years turning business problems into shipped software.</strong><br/>From a rough idea to production: I own the whole loop — requirements, data model, API, interface, auth & permissions, testing, and the maintenance that keeps software alive after launch.</p>
 
-✨ [View the interactive 3D version](https://adeeluddin01.github.io/adeeluddin01/3d/)
+<p align="center">
+  <a href="https://adeeluddin01.github.io/adeeluddin01/3d/"><img src="https://img.shields.io/badge/Interactive_3D_Portfolio-050810?style=for-the-badge&logo=threedotjs&logoColor=white" alt="Interactive 3D portfolio"></a>
+  <a href="mailto:adeeluddin03@gmail.com"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"></a>
+  <a href="https://www.linkedin.com/in/adeeluddin01"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+</p>
 
-[Get in touch](#contact) · [LinkedIn](https://www.linkedin.com/in/adeeluddin01) · [See featured work](#featured-work)
+<p align="center"><strong>10+ years</strong> building software &nbsp;·&nbsp; <strong>50+</strong> custom WordPress sites delivered &nbsp;·&nbsp; SaaS for <strong>banks, startups & product teams</strong></p>
 
 ---
 
-## About
+## What I can build for you
 
-I'm a full-stack developer with 10+ years of experience across web apps, SaaS platforms, mobile (React Native), real-time 3D (WebGL/Three.js), and banking automation. I've built a vault management system inside a bank, a real-time 3D marketing website, multi-tenant SaaS for garages and office buildings, and 50+ custom WordPress sites. The range is the point: I care about the business problem first and the framework second.
+| | |
+|---|---|
+| **Custom SaaS applications** | Multi-user products with auth, roles, and billing-ready backends |
+| **Business management platforms** | CRMs, operations tools, booking & scheduling systems that run a business day-to-day |
+| **Dashboards & admin portals** | Verification queues, monitors, reporting views, approval workflows |
+| **REST APIs & backends** | Clean endpoints, secure auth, well-designed data models |
+| **3D & interactive experiences** | Real-time WebGL/Three.js — product marketing sites, configurators, data visualization |
+| **Maintenance & rescue** | Debugging, performance fixes, and feature work on existing applications |
 
-I own the whole loop — requirements, data model, API, interface, auth and permissions, testing, and the unglamorous maintenance that keeps software alive after launch. I work best with clients who can describe the outcome they want and let me handle the engineering to get there.
+I work best with clients who can describe the outcome they want and let me handle the engineering to get there. You'll get realistic scopes, clear communication, and software that actually ships.
+
+---
+
+## Selected work
+
+### Karighar — on-demand home-services marketplace
+A complete marketplace connecting customers with verified home-service providers across Karachi — three roles (customer, provider, admin), bookings, provider verification, live job tracking, in-app chat, ratings, COD with a commission ledger, and a full admin panel. Database managed as 15 versioned SQL migrations with Row-Level Security throughout.
+
+**Stack:** TypeScript · Next.js 16 · React 19 · Supabase (PostgreSQL) · Tailwind CSS 4 · Google Maps API · Vitest · Playwright
+<br/>**Explore:** [github.com/adeeluddin01/karighar](https://github.com/adeeluddin01/karighar) — videos of the customer, provider & admin flows in `videos/`. *Note: the public demo is currently offline — run it locally.*
+
+### GaragePal — multi-garage management SaaS *(client work)*
+SaaS platform for a Canadian client running multiple automobile garages: operations and bookings unified across locations, AI-assisted booking, multi-role access, service management, invoicing, and an owner-level view over every site. Implementation details stay private.
+
+### SaudiPak — office rental management system *(client work)*
+Building and office-management system for Islamabad operations: tenancy and space management, complaints, job slips, maintenance reporting and attendance with role-based access — plus AI-assisted predictive maintenance and reporting. Implementation details stay private.
+
+### GForge 3D website *(work at GForge)*
+Real-time 3D marketing website built with WebGL and Three.js, with AI-driven 3D tools for product marketing, automated model rendering, and optimized 3D asset pipelines for fast loads across platforms.
 
 ---
 
 ## Tech stack
 
 **Frontend:** `React` `Next.js` `Angular` `React Native` `CSS`
-
 **Backend:** `Node.js` `Express` `Python` `Django` `PHP` `Laravel`
-
 **Data & Auth:** `SQL` `JWT`
-
 **3D & Interactive:** `Three.js` `WebGL`
-
 **Tools & QA:** `Docker` `Git` `Playwright` `Axios`
-
 **AI/ML:** `PyTorch`
 
 ---
 
-## Experience
+<details>
+<summary><strong>Experience timeline</strong> — 10+ years across banks, startups & studios (click to expand)</summary>
+<br/>
 
 - **UBL — United Bank Limited** · Senior Officer, Automation · *Dec 2025 – Present*
-  Building a Vault Management System and RPA automations that turn manual, error-prone banking operations into reliable software-driven processes.
+  Banking automation systems and RPA automations turning manual, error-prone operations into reliable software-driven processes.
 - **GForge** · Full Stack Developer · *Aug 2025 – Dec 2025*
-  Built and optimized a real-time 3D website with WebGL and Three.js, developed AI-driven 3D tools for product marketing, and improved 3D asset pipelines for faster loads and renders across platforms.
+  Real-time 3D website with WebGL/Three.js, AI-driven 3D tools for product marketing, and faster 3D asset pipelines across platforms.
 - **Nexifies** · Full Stack Developer · *Oct 2024 – Jul 2025*
-  Shipped two production systems: **GaragePal**, a SaaS platform for managing multiple automobile garages with AI-assisted booking, multi-role access, service management and invoicing; and **SaudiPak**, an office rental management system covering complaints, job slips and attendance, with AI for predictive maintenance and reporting.
+  Shipped **GaragePal** (multi-garage SaaS: AI-assisted booking, multi-role access, invoicing) and **SaudiPak** (office rental management: complaints, job slips, attendance, predictive maintenance).
 - **EvolTech** · React/Next.js Developer · *Feb 2024 – Present*
-  Frontend and backend delivery — API integration, responsive UI, secure authentication, and SEO-optimized, scalable builds.
+  API integration, responsive UI, secure authentication, SEO-optimized scalable builds.
 - **Mod Adventures** · React Developer · *Dec 2023 – Nov 2024*
-  Translated Figma concepts into pixel-perfect React components; earlier WordPress work (2023) customizing themes and plugins and handling Figma-to-theme builds for client deliveries.
+  Figma-to-pixel-perfect React components; earlier WordPress work (2023) — custom themes, plugins, Figma-to-theme builds.
 - **ShafTech** · CIT Instructor · *Mar 2023 – May 2024*
-  Taught Java, C, C++, C#, RDBMS and networking — learning to explain complex systems simply, a skill that carries directly into client work.
+  Taught Java, C, C++, C#, RDBMS and networking.
 - **Saiyan's Watch** · Full Stack Developer · *Mar 2016 – Dec 2019*
-  Sole developer — designed custom themes and features carrying the company's online presence.
+  Sole developer — custom themes and features carrying the company's online presence.
+
+**Education:** BBA, Karachi University *(in progress)* · Associate Degree in Commerce *(Jan 2025)* · ACCP Diploma, Aptech *(Dec 2024)*
+</details>
 
 ---
 
-## Featured work
+## Let's talk
 
-### Karighar — on-demand home-services marketplace
-
-A complete marketplace connecting customers with verified home-service providers across Karachi: customers book services, providers get verified and accept jobs, and an admin oversees the whole operation — three roles, email + Google OAuth sign-in, fixed-price and custom-job booking, provider onboarding with CNIC verification, live job-status updates, in-app chat, live provider location tracking, ratings and reviews, cash-on-delivery with a commission ledger, a provider earnings wallet, dispute handling, notifications, and a full admin panel. The database is managed as 15 versioned SQL migrations with Row-Level Security throughout.
-
-**Stack:** TypeScript · Next.js 16 · React 19 · Supabase (PostgreSQL) · Tailwind CSS 4 · Google Maps API · Vitest · Playwright
-
-**Explore it:** [github.com/adeeluddin01/karighar](https://github.com/adeeluddin01/karighar) — the repo README walks through Supabase setup (one SQL file seeds the whole schema), `videos/` has recorded walkthroughs of the customer, provider, and admin flows, and `npm test` runs the Vitest suite covering the money/accounting logic and the job-status state machine.
-
-**Honest note:** the public demo deployment is currently offline, so run it locally to see it working.
-
-### GaragePal — multi-garage management SaaS *(client work)*
-
-A SaaS platform for a Canadian client managing multiple automobile garages: garage operations and bookings unified across locations, with AI-assisted booking, multi-role access, service management, invoicing, and an owner-level view over every site. Implementation details stay private.
-
-### SaudiPak — office rental management system *(client work)*
-
-A building and office-management system for Islamabad operations: tenancy and space management, complaints, job slips, maintenance reporting and attendance with role-based access — plus AI-assisted predictive maintenance and reporting. Implementation details stay private.
-
-### GForge 3D website *(work at GForge)*
-
-A real-time 3D marketing website built with WebGL and Three.js, with AI-driven 3D tools for product marketing and automated model rendering, and optimized 3D performance and asset pipelines for efficient loading and rendering across platforms.
-
-### Vault Management System *(work at UBL)*
-
-A vault management system plus RPA automations for banking operations — software taking over manual, high-stakes processes where accuracy matters.
-
----
-
-## Education
-
-BBA, Karachi University *(in progress)* · Associate Degree in Commerce, Karachi University *(Jan 2025)* · ACCP Diploma, Aptech *(Dec 2024)*
-
----
-
-## Contact
-
-If you have a product idea, an existing application that needs work, or a business process that should be software by now — let's talk through it.
+Have a product idea, an existing application that needs work, or a business process that should be software by now?
 
 - **Email:** adeeluddin03@gmail.com
 - **LinkedIn:** https://www.linkedin.com/in/adeeluddin01
 - **GitHub:** https://github.com/adeeluddin01
 
-Tell me the outcome you want; I'll handle the engineering to get there.
+*Tell me the outcome you want; I'll handle the engineering to get there.*
