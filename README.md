@@ -9,7 +9,7 @@
   <a href="https://www.linkedin.com/in/adeeluddin01"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
 </p>
 
-<p align="center"><strong>50+</strong> custom WordPress sites delivered &nbsp;·&nbsp; SaaS for <strong>banks, startups & product teams</strong></p>
+<p align="center"><strong>50+</strong> custom CMS (mainly WordPress) sites delivered &nbsp;·&nbsp; SaaS for <strong>banks, startups & product teams</strong></p>
 
 ---
 
