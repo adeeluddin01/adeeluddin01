@@ -45,6 +45,11 @@ Building and office-management system for Islamabad operations: tenancy and spac
 ### GForge 3D website *(work at GForge)*
 Real-time 3D marketing website built with WebGL and Three.js, with AI-driven 3D tools for product marketing, automated model rendering, and optimized 3D asset pipelines for fast loads across platforms.
 
+### 3D Portfolio — cinematic interactive portfolio
+Six-chapter interactive 3D film presenting full-stack systems, intelligent automation, and immersive digital experiences.
+
+**Live:** [adeeluddin01.github.io/adeeluddin01/3d/](https://adeeluddin01.github.io/adeeluddin01/3d/) — in this profile repo at `3d/index.html`
+
 ---
 
 ## Currently researching — image classification, own neural network architecture
