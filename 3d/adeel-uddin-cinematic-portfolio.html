@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#030406" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="ADEEL UDDIN — Digital Engineering &amp; Interactive Systems. Full-stack systems, intelligent automation, and immersive digital experiences, presented as a six-chapter interactive 3D film." />
+  <meta property="og:title" content="ADEEL UDDIN — Digital Engineering &amp; Interactive Systems" />
+  <meta property="og:description" content="Full-stack systems. Intelligent automation. Immersive digital experiences." />
+  <meta property="og:type" content="website" />
+  <title>ADEEL UDDIN — Digital Engineering &amp; Interactive Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#030406;--fg:#edf3f8;--muted:#85919f;--line:rgba(170,196,216,.14);--steel:#9db7cf;--cyan:#79e5f2;--panel:rgba(8,12,18,.52)}
+    *{box-sizing:border-box}
+    html{background:var(--bg);color:var(--fg);font-family:Manrope,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    body{margin:0;min-height:100vh;background:var(--bg);overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    a:focus-visible{outline:2px solid var(--cyan);outline-offset:5px}
+    #webgl-container{position:fixed;inset:0;z-index:0;pointer-events:none;background:#030406}
+    #webgl-container canvas{display:block;width:100%;height:100%}
+    .ambient-vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 26%,rgba(1,2,3,.42) 62%,rgba(0,1,2,.92) 118%)}
+    .letterbox{position:fixed;left:0;right:0;z-index:2;height:5.2vh;pointer-events:none;background:linear-gradient(var(--dir,180deg),#000 35%,transparent)}
+    .letterbox.top{top:0;--dir:180deg}.letterbox.bot{bottom:0;--dir:0deg}
+    .grain{position:fixed;inset:-50%;z-index:2;pointer-events:none;opacity:.075;mix-blend-mode:screen;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grain 1.1s steps(6) infinite}
+    @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+    .scroll-driver{position:relative;z-index:2;width:100%;pointer-events:none}
+    .scroll-section{height:112vh;position:relative;pointer-events:none}
+    .hud-overlay{position:fixed;inset:0;z-index:10;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(18px,3.2vw,46px)}
+    .hud-top,.hud-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;width:100%}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{position:relative;width:10px;height:10px;border:1px solid var(--cyan);border-radius:50%;box-shadow:0 0 18px rgba(121,229,242,.5);flex:none}
+    .brand-mark:after{content:"";position:absolute;inset:3px;background:var(--cyan);border-radius:50%;animation:pulse 2.8s ease-in-out infinite}
+    .eyebrow,.hud-links,.hud-bottom,.microcopy{font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:.14em;font-size:10px;line-height:1.7}
+    .eyebrow{color:#b0bdc9;white-space:nowrap}
+    .hud-links{display:flex;align-items:center;gap:clamp(12px,2.1vw,30px);color:#9aa8b6;pointer-events:auto}
+    .hud-links a{transition:color .25s ease}.hud-links a:hover{color:var(--cyan)}
+    .hud-bottom{align-items:flex-end;color:#8493a2}
+    #section-indicator{color:var(--cyan);min-width:150px}
+    .shot-readout{display:none}
+    .shot-readout b{display:block;color:#c3d1de;font-weight:500;letter-spacing:.22em;margin-top:2px}
+    .scroll-prompt{display:flex;align-items:center;gap:11px;text-align:right}
+    .scroll-line{width:38px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan));display:inline-block}
+    .scroll-arrow{color:var(--cyan);font-size:15px;animation:float 1.8s ease-in-out infinite}
+    .timeline{position:fixed;z-index:10;left:0;top:0;height:2px;width:100%;pointer-events:none;background:rgba(157,183,207,.08)}
+    .timeline span{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(121,229,242,.1),var(--cyan));box-shadow:0 0 12px rgba(121,229,242,.6)}
+    .cta{position:fixed;z-index:11;left:50%;bottom:clamp(56px,9vh,96px);transform:translate(-50%,12px);opacity:0;pointer-events:none;font:500 11px "DM Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:#dff6fa;border:1px solid rgba(121,229,242,.45);padding:12px 22px;border-radius:2px;background:rgba(3,8,12,.55);backdrop-filter:blur(6px);transition:opacity .9s ease,transform .9s ease,background .25s ease}
+    .cta.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+    .cta:hover{background:rgba(121,229,242,.14)}
+    .loader{position:fixed;inset:0;z-index:20;background:#030406;display:grid;place-items:center;transition:opacity .9s ease,visibility .9s ease}
+    .loader.hidden{opacity:0;visibility:hidden}
+    .loader-inner{width:min(260px,70vw);text-align:center}
+    .loader-title{font:10px "DM Mono",monospace;letter-spacing:.2em;color:#a8b7c6;text-transform:uppercase;margin-bottom:16px}
+    .loader-track{height:1px;background:#202a34;overflow:hidden}
+    .loader-bar{height:100%;width:0;background:var(--cyan);box-shadow:0 0 14px var(--cyan);transition:width .2s ease}
+    .loader-caption{margin-top:12px;color:#5d6a78;font:9px "DM Mono",monospace;letter-spacing:.12em}
+    .no-webgl{display:none;position:fixed;inset:0;z-index:4;place-items:center;padding:30px;text-align:center;color:#d7e0e9;background:#030406}
+    .no-webgl p{max-width:480px;line-height:1.8;color:var(--muted)}
+    .scene-fallback{position:fixed;z-index:3;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 90px;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(20,34,46,.4),transparent 62%)}
+    .scene-fallback .fallback-kicker{font:10px "DM Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan);margin-bottom:24px}
+    .scene-fallback h1{font-size:clamp(36px,7.4vw,92px);line-height:.98;letter-spacing:-.065em;margin:0;color:#f2f7fb;font-weight:800}
+    .scene-fallback h2{font:500 clamp(11px,1.8vw,18px) "DM Mono",monospace;letter-spacing:.12em;color:#a9bac8;margin:22px 0 14px}
+    .scene-fallback p{max-width:620px;font-size:clamp(13px,1.45vw,16px);line-height:1.8;color:#8999a8;margin:0}
+    .scene-fallback .fallback-skills{margin-top:28px;font:10px/2 "DM Mono",monospace;letter-spacing:.12em;color:#8ea2b4;text-transform:uppercase}
+    body.webgl-ready .scene-fallback{display:none}
+    .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+    .scene-control{position:fixed;z-index:11;left:clamp(18px,3.2vw,46px);bottom:calc(clamp(18px,3.2vw,46px) + 40px);display:flex;gap:9px;pointer-events:none;font-family:"DM Mono",monospace;text-transform:uppercase;text-shadow:0 0 12px rgba(0,0,0,.9)}
+    .seq-btn{pointer-events:auto;cursor:pointer;padding:8px 12px;font:500 9px "DM Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:#dff6fa;background:rgba(3,8,12,.55);border:1px solid rgba(121,229,242,.4);border-radius:2px;backdrop-filter:blur(6px);transition:background .25s ease,border-color .25s ease}
+    .seq-btn span{display:inline-block;transition:transform .25s ease}
+    .seq-btn:hover{background:rgba(121,229,242,.14);border-color:var(--cyan)}
+    .seq-btn:hover span{transform:translate(2px,-2px)}
+    .seq-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+
+    /* ── THE READABLE LAYER ───────────────────────────────────────────────────
+       The dossier only ever appears on a still, front-facing reading hold. The
+       scrim gives the copy a guaranteed contrast floor over the moving scene. */
+    .dossier-scrim{position:fixed;z-index:6;inset:0 auto 0 0;width:min(700px,56vw);pointer-events:none;opacity:0;transition:opacity .7s ease;background:linear-gradient(90deg,rgba(2,4,6,.94) 0%,rgba(2,4,6,.78) 36%,rgba(2,4,6,.34) 70%,transparent 100%)}
+    .dossier-scrim.on{opacity:1}
+    .dossier{position:fixed;z-index:7;left:clamp(18px,3.2vw,46px);top:19vh;width:min(398px,34vw);max-height:64vh;pointer-events:none;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .8s cubic-bezier(.22,1,.36,1)}
+    .dossier.on{opacity:1;transform:none}
+    .dsr-chapter{display:flex;align-items:baseline;gap:10px;font:10px "DM Mono",monospace;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase}
+    .dsr-chapter em{font-style:normal;color:#8ea0b1;letter-spacing:.15em}
+    .dsr-seq{margin-top:7px;font:9px "DM Mono",monospace;letter-spacing:.14em;color:#5f6e7d;text-transform:uppercase}
+    .dsr-kicker{margin-top:17px;padding-top:14px;border-top:1px solid var(--line);font:9px/1.7 "DM Mono",monospace;letter-spacing:.18em;color:#7f8e9c;text-transform:uppercase}
+    .dsr-title{margin:11px 0 0;font-size:clamp(17px,1.55vw,23px);line-height:1.32;letter-spacing:-.02em;font-weight:700;color:#eaf2f8}
+    .dsr-body{margin-top:12px}
+    .dsr-body p{margin:0 0 9px;font-size:clamp(12px,.92vw,13.5px);line-height:1.74;color:#90a0af}
+    .dsr-points{list-style:none;margin:15px 0 0;padding:0;display:grid;gap:9px}
+    .dsr-points li{position:relative;padding-left:17px;font:11px/1.62 "DM Mono",monospace;letter-spacing:.02em;color:#a1b2c2}
+    .dsr-points li:before{content:"";position:absolute;left:0;top:8px;width:7px;height:1px;background:var(--cyan);box-shadow:0 0 8px rgba(121,229,242,.8)}
+    .dsr-meta{margin:17px 0 0;display:grid;gap:7px}
+    .dsr-meta div{display:flex;gap:12px;align-items:baseline;border-bottom:1px solid rgba(170,196,216,.08);padding-bottom:6px}
+    .dsr-meta dt{flex:none;min-width:86px;font:9px "DM Mono",monospace;letter-spacing:.16em;color:#5f6e7d;text-transform:uppercase}
+    .dsr-meta dd{margin:0;font:10px "DM Mono",monospace;letter-spacing:.09em;color:#c2d2e0;text-transform:uppercase}
+    .dsr-tags{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px}
+    .dsr-tags span{font:9px "DM Mono",monospace;letter-spacing:.14em;color:#8bacc2;border:1px solid rgba(121,229,242,.22);padding:4px 7px;border-radius:2px;background:rgba(121,229,242,.05)}
+
+    .chapter-rail{position:fixed;z-index:7;right:clamp(18px,3.2vw,46px);top:50%;transform:translateY(-50%);display:grid;gap:15px;pointer-events:none;opacity:0;transition:opacity .9s ease}
+    .chapter-rail.on{opacity:1}
+    .chapter-rail .ch{display:flex;align-items:center;justify-content:flex-end;gap:10px;font:9px "DM Mono",monospace;letter-spacing:.18em;color:rgba(151,170,188,.36);text-transform:uppercase;transition:color .5s ease}
+    .chapter-rail .ch b{font-weight:400}
+    .chapter-rail .ch span{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .6s cubic-bezier(.22,1,.36,1),opacity .5s ease}
+    .chapter-rail .ch:after{content:"";width:14px;height:1px;background:currentColor;flex:none;transition:width .5s ease}
+    .chapter-rail .ch.on{color:var(--cyan)}
+    .chapter-rail .ch.on span{max-width:200px;opacity:1}
+    .chapter-rail .ch.on:after{width:30px;box-shadow:0 0 10px rgba(121,229,242,.7)}
+
+    @keyframes pulse{0%,100%{transform:scale(.75);opacity:.7}50%{transform:scale(1.25);opacity:1}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+    @media(max-width:1100px){.dossier{width:min(360px,40vw);top:17vh}.chapter-rail{gap:12px}}
+    @media(max-width:860px){
+      .chapter-rail{display:none}
+      .dossier{left:16px;right:16px;width:auto;top:auto;bottom:168px;max-height:38vh;overflow:hidden}
+      .dossier-scrim{inset:auto 0 0 0;width:auto;height:64vh;background:linear-gradient(0deg,rgba(2,4,6,.95) 0%,rgba(2,4,6,.82) 42%,rgba(2,4,6,.3) 78%,transparent 100%)}
+      .dsr-title{font-size:16px}.dsr-body p{font-size:12px}.dsr-points{gap:6px}.dsr-points li{font-size:10px;line-height:1.5}
+      .dsr-meta{gap:5px}.dsr-meta dt{min-width:72px}
+    }
+    @media(max-width:700px){.hud-overlay{padding:20px}.eyebrow{font-size:8px;letter-spacing:.09em;white-space:normal;max-width:175px}.hud-links{gap:12px;font-size:9px}.hud-bottom{font-size:9px}.scroll-line{width:20px}.scroll-section{height:106vh}.scene-control{left:20px;bottom:58px;gap:6px}}
+    @media(max-width:420px){.hud-links{gap:9px}.hud-links a{font-size:8px}.eyebrow{max-width:130px}.scroll-prompt span:first-child{max-width:105px}.dossier{bottom:150px;max-height:36vh}.dsr-tags span{padding:3px 5px}}
+    @media(prefers-reduced-motion:reduce){
+      .brand-mark:after,.scroll-arrow,.grain{animation:none}
+      .scene-control,.seq-btn,.seq-btn span,.dossier,.dossier-scrim,.chapter-rail .ch span{transition:none}
+    }
+  </style>
+</head>
+<body>
+  <div id="webgl-container" aria-hidden="true"></div>
+  <section class="scene-fallback" aria-label="Brand introduction">
+    <div class="fallback-kicker">Independent technology identity · Est. through engineering</div>
+    <h1>ADEEL<br />UDDIN</h1>
+    <h2>DIGITAL ENGINEERING &amp; INTERACTIVE SYSTEMS</h2>
+    <p>Full-stack systems. Intelligent automation. Immersive digital experiences. Technology is not just built — it is engineered with intent.</p>
+    <div class="fallback-skills">REACT · NEXT.JS · NODE.JS · PYTHON · DJANGO · LARAVEL · THREE.JS · WEBGL · DOCKER</div>
+  </section>
+  <div class="ambient-vignette" aria-hidden="true"></div>
+  <div class="letterbox top" aria-hidden="true"></div><div class="letterbox bot" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="timeline" aria-hidden="true"><span id="timeline-fill"></span></div>
+
+  <div class="dossier-scrim" id="dossier-scrim" aria-hidden="true"></div>
+  <article class="dossier" id="dossier" aria-hidden="true"></article>
+  <nav class="chapter-rail" id="chapter-rail" aria-hidden="true"></nav>
+
+  <div class="hud-overlay">
+    <header class="hud-top">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="eyebrow">ADEEL UDDIN // DIGITAL ENGINEERING</span>
+      </div>
+      <nav class="hud-links" aria-label="Contact links">
+        <a href="mailto:adeeluddin03@gmail.com">Email ↗</a>
+        <a href="https://www.linkedin.com/in/adeeluddin01" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+        <a href="https://github.com/adeeluddin01" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </nav>
+    </header>
+    <footer class="hud-bottom">
+      <div id="section-indicator">[ 01 / 18 ] WORDMARK</div>
+      <div class="shot-readout">CAMERA<b id="shot-readout">ESTABLISHING</b></div>
+      <div class="scroll-prompt"><span>SCROLL TO DIRECT THE SHOT</span><span class="scroll-line"></span><span class="scroll-arrow">↓</span></div>
+    </footer>
+  </div>
+  <a class="cta" id="cta" href="mailto:adeeluddin03@gmail.com">adeeluddin03@gmail.com ↗</a>
+  <div class="scene-control" id="scene-control">
+    <button type="button" class="seq-btn" id="scene-control-prev" aria-label="Go to the previous portfolio section">PREV SEQUENCE <span aria-hidden="true">↖</span></button>
+    <button type="button" class="seq-btn" id="scene-control-action" aria-label="Advance to the next portfolio section">NEXT SEQUENCE <span aria-hidden="true">↗</span></button>
+  </div>
+
+  <div class="loader" id="loader" role="status" aria-live="polite">
+    <div class="loader-inner"><div class="loader-title">Setting the stage</div><div class="loader-track"><div class="loader-bar" id="loader-bar"></div></div><div class="loader-caption" id="loader-caption">INITIALIZING 3D ENVIRONMENT</div></div>
+  </div>
+  <div class="no-webgl" id="no-webgl"><div><strong>WebGL is unavailable in this browser.</strong><p>Please enable hardware acceleration or try a modern browser to experience the interactive brand film.</p><a href="mailto:adeeluddin03@gmail.com">Contact Adeel Uddin ↗</a></div></div>
+
+  <div class="sr-only" id="sr-content"></div>
+
+  <main class="scroll-driver" aria-label="Portfolio scroll timeline">
+    <div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div>
+    <div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div>
+    <div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div>
+    <div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div><div class="scroll-section"></div>
+    <div class="scroll-section"></div><div class="scroll-section"></div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  (() => {
+    'use strict';
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // CONTENT — ADEEL UDDIN · DIGITAL ENGINEERING & INTERACTIVE SYSTEMS
+    // Six chapters, eighteen sequences. `lines` is the particle-written headline
+    // (kept short so it stays legible as metal type); `panel` is the readable
+    // dossier that carries the actual substance during every reading hold.
+    // `layout` picks the geometric accent built from the same metal spheres.
+    // ───────────────────────────────────────────────────────────────────────────
+    const BRAND = 'ADEEL UDDIN';   // append '®' here only once the wordmark is actually registered
+    const MAIL = 'adeeluddin03@gmail.com';
+
+    const CHAPTERS = [
+      {id:'01', name:'THE IDENTITY',            sub:'Opening sequence · Brand manifesto'},
+      {id:'02', name:'THE ARCHITECTURE',        sub:'Technical capabilities · Systems thinking'},
+      {id:'03', name:'ENTERPRISE & AUTOMATION', sub:'United Bank Limited · GForge'},
+      {id:'04', name:'PRODUCT ENGINEERING',     sub:'Nexifies · EvolTech'},
+      {id:'05', name:'CRAFT & INDEPENDENCE',    sub:'Mod Adventures · ShafTech · News Of Anime'},
+      {id:'06', name:'FOUNDATION & FUTURE',     sub:'Saiyan&rsquo;s Watch · Education · Closing'}
+    ];
+
+    const PORTFOLIO_DATA = {
+      sections: [
+        {id:'01', ch:0, label:'WORDMARK', layout:'ring',
+         lines:[{text:BRAND,size:78},{text:'DIGITAL ENGINEERING',size:33},{text:'INTERACTIVE SYSTEMS',size:27}],
+         panel:{kicker:'INDEPENDENT TECHNOLOGY IDENTITY · EST. THROUGH ENGINEERING',
+           title:'Digital Engineering &amp; Interactive Systems',
+           body:['Full-stack systems. Intelligent automation. Immersive digital experiences.'],
+           meta:[['01','ENGINEER'],['02','BUILD'],['03','EVOLVE']]}},
+
+        {id:'02', ch:0, label:'INTENT', layout:'halo',
+         lines:[{text:'ENGINEERED',size:58},{text:'WITH INTENT',size:58}],
+         panel:{kicker:'BRAND MANIFESTO',
+           title:'Technology is not just built. It is engineered with intent.',
+           body:['Adeel Uddin is a technology-focused professional working across full-stack development, automation, AI-enabled product features, and interactive digital experiences.',
+                 'The work spans web applications, operational platforms, intelligent capabilities, and immersive 3D interfaces.'],
+           points:['A problem to understand','A system to shape','An experience to deliver']}},
+
+        {id:'03', ch:0, label:'PHILOSOPHY', layout:'outline',
+         lines:[{text:'THE PHILOSOPHY',size:60},{text:'SOLVE · CLARIFY',size:33},{text:'AUTOMATE · EVOLVE',size:33}],
+         panel:{kicker:'OPERATING PRINCIPLES',
+           title:'Four rules the work answers to.',
+           points:['Engineering should solve real problems',
+                   'Interfaces should make complex functionality understandable',
+                   'Automation should make processes more efficient',
+                   'Technology should be designed to evolve'],
+           tags:['DIGITAL ENGINEERING','INTERACTIVE SYSTEMS']}},
+
+        {id:'04', ch:1, label:'FOUNDATION', layout:'frame',
+         lines:[{text:'A MULTIDISCIPLINARY',size:46},{text:'ENGINEERING FOUNDATION',size:46}],
+         panel:{kicker:'SYSTEMS THINKING',
+           title:'Products are connected systems, not isolated software.',
+           body:['Digital products are rarely isolated pieces of software. They are connected systems of interfaces, application logic, data, integrations, and user workflows.',
+                 'The technical foundation spans the frontend and backend used to build modern applications, with further work in 3D web graphics, automation, and AI-enabled features.'],
+           meta:[['DOMAINS','FIVE'],['PRINCIPLE','PRODUCT FIRST']]}},
+
+        {id:'05', ch:1, label:'INTERFACE ENGINEERING', layout:'rails',
+         lines:[{text:'INTERFACE ENGINEERING',size:50},{text:'REACT · NEXT.JS',size:30},{text:'ANGULAR · REACT NATIVE',size:30}],
+         panel:{kicker:'01 / INTERFACE ENGINEERING',
+           title:'Requirements translated into usable software.',
+           body:['Building responsive interfaces, reusable components, and web experiences that turn product requirements into software people can actually operate.'],
+           tags:['REACT','NEXT.JS','ANGULAR','REACT NATIVE','CSS']}},
+
+        {id:'06', ch:1, label:'APPLICATION ENGINEERING', layout:'twin',
+         lines:[{text:'APPLICATION ENGINEERING',size:47},{text:'NODE.JS · PYTHON',size:30},{text:'DJANGO · LARAVEL',size:30}],
+         panel:{kicker:'02 / APPLICATION ENGINEERING',
+           title:'Functionality across frontend and backend environments.',
+           body:['Developing application logic end to end, with experience integrating third-party APIs and authentication into production applications.'],
+           tags:['NODE.JS','EXPRESS.JS','PYTHON','DJANGO','PHP','LARAVEL']}},
+
+        {id:'07', ch:1, label:'DATA & INTELLIGENCE', layout:'halo',
+         lines:[{text:'DATA & INTELLIGENCE',size:50},{text:'SQL · PYTORCH',size:28},{text:'AI-ASSISTED FEATURES',size:25}],
+         panel:{kicker:'03 / DATA AND INTELLIGENT FEATURES',
+           title:'Database-driven applications with intelligent capability.',
+           body:['Work on database-backed products, and on projects incorporating AI-assisted booking, AI-driven 3D tooling, and predictive maintenance features.'],
+           tags:['SQL','PYTORCH','AI-ASSISTED PRODUCT FEATURES']}},
+
+        {id:'08', ch:1, label:'INTERACTIVE TECHNOLOGIES', layout:'helix',
+         lines:[{text:'INTERACTIVE TECHNOLOGIES',size:45},{text:'WEBGL · THREE.JS',size:34},{text:'REAL-TIME 3D',size:30}],
+         panel:{kicker:'04 / INTERACTIVE · 05 / ENGINEERING TOOLS',
+           title:'Interactive 3D experiences, and the tooling around them.',
+           body:['Building interactive 3D web experiences, real-time visuals, and product-rendering tools — supported by the tooling that makes them shippable.'],
+           points:['WebGL · Three.js · real-time rendering','Axios · JWT · Docker · Playwright'],
+           meta:[['PRINCIPLE','SERVE THE PRODUCT'],['NOT','THE STACK']]}},
+
+        {id:'09', ch:2, label:'UNITED BANK LIMITED', layout:'frame',
+         lines:[{text:'UNITED BANK LIMITED',size:48},{text:'SENIOR OFFICER',size:30},{text:'AUTOMATION · 2025',size:30}],
+         panel:{kicker:'ENTERPRISE ENVIRONMENT',
+           title:'Engineering inside a complex digital environment.',
+           body:['An automation-focused role in a banking environment, contributing to digital solutions and process automation — a setting where reliability, structured workflows, and responsible handling of internal information matter.'],
+           points:['Automation-oriented development','Digital workflow improvement','Technical problem-solving in a banking environment'],
+           tags:['INTERNAL SYSTEM DETAIL INTENTIONALLY EXCLUDED']}},
+
+        {id:'10', ch:2, label:'GFORGE', layout:'helix',
+         lines:[{text:'GFORGE',size:72},{text:'FULL STACK DEVELOPER',size:26},{text:'AUG 2025 — DEC 2025',size:23}],
+         panel:{kicker:'REAL-TIME 3D',
+           title:'Interactive 3D experiences and AI-driven product tools.',
+           points:['Built and optimised a 3D website in WebGL and Three.js for real-time interactive visuals',
+                   'Developed AI-driven 3D tools for product marketing and automated model rendering',
+                   'Improved 3D performance and asset pipelines for loading and rendering efficiency'],
+           tags:['WEBGL','THREE.JS','AI-DRIVEN 3D TOOLING','ASSET PIPELINES']}},
+
+        {id:'11', ch:2, label:'THE INTERSECTION', layout:'twin',
+         lines:[{text:'THE INTERSECTION',size:54},{text:'ENTERPRISE AUTOMATION',size:25},{text:'IMMERSIVE 3D',size:30}],
+         panel:{kicker:'THE DISTINCTIVE NARRATIVE',
+           title:'Two contexts, one way of thinking.',
+           body:['Enterprise automation and immersive 3D development operate in different technical contexts, but both demand an understanding of systems, workflows, performance, and user needs.'],
+           meta:[['TRACK A','PRACTICAL APPLICATION ENGINEERING'],['TRACK B','VISUALLY SOPHISTICATED EXPERIENCES']]}},
+
+        {id:'12', ch:3, label:'GARAGEPAL', layout:'frame',
+         lines:[{text:'GARAGEPAL',size:64},{text:'AUTOMOTIVE SAAS',size:30},{text:'NEXIFIES · 2024 — 2025',size:23}],
+         panel:{kicker:'PRODUCT CASE · OCT 2024 – JUL 2025',
+           title:'A SaaS platform for multi-garage operations.',
+           body:['Automotive service operations involve many activities and user roles. GaragePal brings booking, service handling, and invoicing into one platform designed around those workflows.'],
+           points:['AI-assisted booking','Multi-role access','Service management','Invoicing workflows']}},
+
+        {id:'13', ch:3, label:'SAUDIPAK', layout:'twin',
+         lines:[{text:'SAUDIPAK',size:66},{text:'OFFICE RENTAL',size:30},{text:'NEXIFIES · 2024 — 2025',size:23}],
+         panel:{kicker:'PRODUCT CASE · OCT 2024 – JUL 2025',
+           title:'Administrative workflows, with intelligent reporting.',
+           body:['An office rental management system built to streamline administrative process and operational coordination, with intelligent features layered on top.'],
+           points:['Complaint management','Job slips','Attendance management','AI-assisted predictive maintenance and reporting']}},
+
+        {id:'14', ch:3, label:'EVOLTECH', layout:'rails',
+         lines:[{text:'EVOLTECH',size:66},{text:'REACT · NEXT.JS',size:30},{text:'FEB 2024 — PRESENT',size:23}],
+         panel:{kicker:'PRODUCT PHILOSOPHY',
+           title:'Understand the workflow. Connect the components. Build for use.',
+           body:['Developing digital experiences across frontend and backend environments: API integration, responsive interfaces, secure authentication, SEO-oriented development, and scalable implementation.'],
+           points:['Identify the operational problem before designing the implementation',
+                   'Bring interfaces, application logic and integrations together',
+                   'Prioritise usability, responsive behaviour and maintainability']}},
+
+        {id:'15', ch:4, label:'THE CRAFT', layout:'outline',
+         lines:[{text:'THE CRAFT',size:64},{text:'MOD ADVENTURES',size:30},{text:'NEWS OF ANIME',size:24}],
+         panel:{kicker:'2021 — 2024',
+           title:'The details are where the product becomes real.',
+           points:['Mod Adventures · React Developer — Figma to pixel-accurate, responsive ReactJS components, built independently',
+                   'Mod Adventures · Full Stack — WordPress theme and plugin customisation, Figma-to-theme delivery',
+                   'ShafTech · CIT Instructor — taught Java, C, C++, C#, RDBMS and networking',
+                   'News Of Anime · sole developer — SEO, customisation and feature ownership']}},
+
+        {id:'16', ch:4, label:'THE WORKING STANDARD', layout:'halo',
+         lines:[{text:'THE WORKING STANDARD',size:50},{text:'FIDELITY · PURPOSE',size:27},{text:'CLARITY · OWNERSHIP',size:27}],
+         panel:{kicker:'HOW THE WORK GETS DONE',
+           title:'A standard that travels between stacks.',
+           points:['Translate designs into functional interfaces',
+                   'Understand the purpose behind a feature before implementing it',
+                   'Work across different technologies and project requirements',
+                   'Treat usability and implementation quality as one responsibility']}},
+
+        {id:'17', ch:5, label:'THE FOUNDATION', layout:'frame',
+         lines:[{text:'THE FOUNDATION',size:52},{text:"SAIYAN'S WATCH",size:30},{text:'KARACHI UNIVERSITY',size:30}],
+         panel:{kicker:'BUILT THROUGH PRACTICE',
+           title:'First and only developer. Broad development ownership.',
+           body:['Saiyan&rsquo;s Watch · Full Stack Developer — designed custom themes and built features to strengthen the company online presence, with end-to-end development responsibility.'],
+           meta:[['BBA','KARACHI UNIVERSITY · IN PROGRESS'],['ASSOC. COMMERCE','KARACHI UNIVERSITY · JAN 2025'],['ACCP PRIME','APTECH · DEC 2024']]}},
+
+        {id:'18', ch:5, label:'CLOSING FRAME', layout:'halo',
+         lines:[{text:'ENGINEER THE EXPERIENCE',size:40},{text:'BUILD THE SYSTEM',size:40},{text:'MOVE THE IDEA FORWARD',size:40}],
+         panel:{kicker:'THE DIRECTION AHEAD',
+           title:'Understand what technology makes possible, then build it.',
+           body:['Continuing to develop useful digital products — bringing together full-stack development, automation, and immersive technology.'],
+           meta:[['EMAIL',MAIL],['PHONE','+92 316 6043643'],['LINKEDIN','in/adeeluddin01'],['GITHUB','adeeluddin01']],
+           tags:['FULL STACK DEVELOPMENT','AUTOMATION','INTERACTIVE SYSTEMS']}}
+      ]
+    };
+    const SECTION_COUNT = PORTFOLIO_DATA.sections.length;
+    const HOLD = 0.60;  // the first 60% of every section is a still, front-facing, readable frame
+
+    // Accessible + crawlable text version of the whole film.
+    (() => {
+      const sr = document.getElementById('sr-content');
+      sr.innerHTML = PORTFOLIO_DATA.sections.map(s => {
+        const p = s.panel || {};
+        return `<section><h2>${s.lines.map(l => l.text).join(' — ')}</h2>` +
+          `<p>Chapter ${CHAPTERS[s.ch].id} — ${CHAPTERS[s.ch].name}. ${p.kicker || ''}</p>` +
+          (p.title ? `<h3>${p.title}</h3>` : '') +
+          (p.body || []).map(b => `<p>${b}</p>`).join('') +
+          (p.points ? `<ul>${p.points.map(x => `<li>${x}</li>`).join('')}</ul>` : '') +
+          (p.meta ? `<dl>${p.meta.map(m => `<dt>${m[0]}</dt><dd>${m[1]}</dd>`).join('')}</dl>` : '') +
+          `</section>`;
+      }).join('');
+    })();
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // DOSSIER — the readable layer. Content is swapped only while the panel is
+    // hidden (mid-transition), so copy never changes under the reader's eyes.
+    // ───────────────────────────────────────────────────────────────────────────
+    const dossier = document.getElementById('dossier');
+    const dossierScrim = document.getElementById('dossier-scrim');
+    const chapterRail = document.getElementById('chapter-rail');
+    chapterRail.innerHTML = CHAPTERS.map(c => `<div class="ch"><b>${c.id}</b><span>${c.name}</span></div>`).join('');
+    const railItems = Array.prototype.slice.call(chapterRail.querySelectorAll('.ch'));
+
+    function renderDossier(i){
+      const s = PORTFOLIO_DATA.sections[i], p = s.panel || {}, c = CHAPTERS[s.ch];
+      dossier.innerHTML =
+        `<div class="dsr-chapter"><span>CHAPTER ${c.id}</span><em>${c.name}</em></div>` +
+        `<div class="dsr-seq">SEQ ${s.id} / ${String(SECTION_COUNT).padStart(2,'0')} · ${c.sub}</div>` +
+        (p.kicker ? `<div class="dsr-kicker">${p.kicker}</div>` : '') +
+        (p.title ? `<h2 class="dsr-title">${p.title}</h2>` : '') +
+        ((p.body || []).length ? `<div class="dsr-body">${p.body.map(b => `<p>${b}</p>`).join('')}</div>` : '') +
+        (p.points ? `<ul class="dsr-points">${p.points.map(x => `<li>${x}</li>`).join('')}</ul>` : '') +
+        (p.meta ? `<dl class="dsr-meta">${p.meta.map(m => `<div><dt>${m[0]}</dt><dd>${m[1]}</dd></div>`).join('')}</dl>` : '') +
+        (p.tags ? `<div class="dsr-tags">${p.tags.map(t => `<span>${t}</span>`).join('')}</div>` : '');
+      railItems.forEach((el, k) => el.classList.toggle('on', k === s.ch));
+    }
+
+    const container = document.getElementById('webgl-container');
+    const loader = document.getElementById('loader');
+    const loaderBar = document.getElementById('loader-bar');
+    const loaderCaption = document.getElementById('loader-caption');
+    const sectionIndicator = document.getElementById('section-indicator');
+    const shotReadout = document.getElementById('shot-readout');
+    const timelineFill = document.getElementById('timeline-fill');
+    const ctaEl = document.getElementById('cta');
+    const sceneControl = document.getElementById('scene-control');
+    const sceneControlAction = document.getElementById('scene-control-action');
+    const sceneControlPrev = document.getElementById('scene-control-prev');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!window.THREE) { loader.classList.add('hidden'); return; }
+
+    const THREE = window.THREE;
+    const mobile = innerWidth < 700;
+    const FLOOR = -4.36;          // resting height of sphere centres on the floor
+    const FLOOR_PLANE = -4.4;
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // SCENE, RENDERER
+    // ───────────────────────────────────────────────────────────────────────────
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x030406);
+    scene.fog = new THREE.FogExp2(0x030406, 0.025);
+
+    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 260);
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({antialias: innerWidth < 900, alpha: false, powerPreference: 'high-performance'});
+    } catch (err) { loader.classList.add('hidden'); return; }
+    let pixelRatioCap = mobile ? 1.2 : 1.65;
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pixelRatioCap));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08; // protect bright metal highlights and preserve shadow detail
+    container.appendChild(renderer.domElement);
+
+    // Procedural studio cube: narrow strips for the chrome to catch, with one side (the void) left nearly black.
+    function makeStudioEnvironment(){
+      const faces = [];
+      for (let face = 0; face < 6; face++){
+        const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+        const ctx = c.getContext('2d');
+        const g = ctx.createLinearGradient(0, 0, 256, 256);
+        g.addColorStop(0, '#1f2a35'); g.addColorStop(.42, '#05080c'); g.addColorStop(1, '#0d151d');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, 256, 256);
+        ctx.globalAlpha = .85;
+        ctx.fillStyle = face % 2 ? '#8fb4d4' : '#dcebf5';
+        ctx.fillRect(18 + face * 23, 0, face % 2 ? 3 : 2, 256);
+        ctx.fillStyle = '#3b6498'; ctx.fillRect(0, 52 + face * 17, 256, face % 2 ? 2 : 1);
+        ctx.globalAlpha = 1; faces.push(c);
+      }
+      const cube = new THREE.CubeTexture(faces); cube.needsUpdate = true; cube.mapping = THREE.CubeReflectionMapping; return cube;
+    }
+    scene.environment = makeStudioEnvironment();
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // LIGHTING RIG
+    //  key  : narrow, hard white strip grazing the type from the void side
+    //  rim  : cold steel-blue from the light-wall side
+    //  top  : overhead pool, used for stillness (education) and the impact overhead
+    //  sweep: soft accent that drifts, cyan is an accent not the palette
+    // ───────────────────────────────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0x6f8397, 0.2));
+    const key = new THREE.SpotLight(0xffe9c7, 60, 60, 0.32, 0.45, 1.2);
+    key.position.set(-11, 3.5, 7); key.target.position.set(0, 0, 0); scene.add(key, key.target);
+    const rim = new THREE.PointLight(0x5d8fcf, 34, 36, 2); rim.position.set(10, 2, -1); scene.add(rim);
+    const topLight = new THREE.PointLight(0xe5f2ff, 12, 34, 2); topLight.position.set(0, 9, 0); scene.add(topLight);
+    const sweepLight = new THREE.SpotLight(0x9fc4e8, 22, 38, Math.PI / 6, .7, 1.4);
+    sweepLight.position.set(-7, 8, 8); sweepLight.target.position.set(0, 0, 0); scene.add(sweepLight, sweepLight.target);
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // TEXTURES
+    // ───────────────────────────────────────────────────────────────────────────
+    function makeRadialTexture(){
+      const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+      const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.35, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+    }
+    function makeShaftTexture(){
+      const c = document.createElement('canvas'); c.width = 64; c.height = 256; const x = c.getContext('2d');
+      const img = x.createImageData(64, 256);
+      for (let yy = 0; yy < 256; yy++) for (let xx = 0; xx < 64; xx++){
+        const dx = (xx - 31.5) / 32, v = yy / 255;
+        const a = Math.exp(-dx * dx * 4.2) * Math.pow(Math.sin(Math.PI * Math.min(1, v * .96 + .02)), .8);
+        const o = (yy * 64 + xx) * 4; img.data[o] = 200; img.data[o + 1] = 225; img.data[o + 2] = 255; img.data[o + 3] = a * 255;
+      }
+      x.putImageData(img, 0, 0); return new THREE.CanvasTexture(c);
+    }
+    function makeFloorRoughness(){
+      const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+      const img = x.createImageData(256, 256);
+      for (let i = 0; i < 256 * 256; i++){
+        const n = 150 + Math.random() * 70 + Math.sin(i * .013) * 18;
+        img.data[i * 4] = n; img.data[i * 4 + 1] = n; img.data[i * 4 + 2] = n; img.data[i * 4 + 3] = 255;
+      }
+      x.putImageData(img, 0, 0);
+      const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(26, 26); return t;
+    }
+    const radialTex = makeRadialTexture(), shaftTex = makeShaftTexture();
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // THE ROOM — Zone A void · Zone B unstable light wall · Zone C reflective floor · Zone D atmosphere
+    // `mirror` is a flipped group that holds copies of everything that should reflect in the floor.
+    // It shares geometry, materials and instance buffers, so reflections cost one extra draw call each.
+    // ───────────────────────────────────────────────────────────────────────────
+    const mirror = new THREE.Group();
+    mirror.scale.set(1, -1, 1); mirror.position.y = 2 * FLOOR_PLANE; scene.add(mirror);
+
+    // Zone C: a dark imperfect floor. Slightly translucent so the mirrored copies read through it, weakened by roughness and fog.
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(220, 220),
+      // A sealed-concrete floor rather than a mirror. The mirrored copies underneath still read
+      // through the transparency, so the reflection survives — it just stops looking like glass.
+      new THREE.MeshStandardMaterial({color: 0x070a0e, metalness: .20, roughness: .86, roughnessMap: makeFloorRoughness(), envMapIntensity: .22, transparent: true, opacity: .8})
+    );
+    floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_PLANE; scene.add(floor);
+    const floorPool = new THREE.Mesh(new THREE.PlaneGeometry(26, 14), new THREE.MeshBasicMaterial({map: radialTex, color: 0x5d8fcf, transparent: true, opacity: .1, blending: THREE.AdditiveBlending, depthWrite: false}));
+    floorPool.rotation.x = -Math.PI / 2; floorPool.position.set(9, FLOOR_PLANE + .01, -3); scene.add(floorPool);
+    const impactPool = new THREE.Mesh(new THREE.PlaneGeometry(30, 18), new THREE.MeshBasicMaterial({map: radialTex, color: 0xcfe6ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false}));
+    impactPool.rotation.x = -Math.PI / 2; impactPool.position.set(0, FLOOR_PLANE + .02, -1.4); scene.add(impactPool);
+
+    // Physical-feeling impact accents: expanding floor shockwaves and ballistic metal sparks.
+    // These are deterministic from the shot timeline, so scrolling backwards replays the same impact.
+    const shockwaves = [];
+    for (let i = 0; i < 3; i++){
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(1, .018 + i * .006, 6, 96),
+        new THREE.MeshBasicMaterial({color: i === 0 ? 0xeaf7ff : 0x82bde8, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false})
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(0, FLOOR_PLANE + .035 + i * .008, -1.4);
+      ring.scale.setScalar(.01);
+      scene.add(ring);
+      shockwaves.push(ring);
+    }
+    const sparkCount = mobile ? 90 : 260;
+    const sparkGeo = new THREE.BufferGeometry();
+    const sparkPositions = new Float32Array(sparkCount * 3);
+    const sparkVelocities = new Float32Array(sparkCount * 3);
+    const sparkSeeds = new Float32Array(sparkCount);
+    for (let i = 0; i < sparkCount; i++){
+      const a = Math.random() * Math.PI * 2;
+      const speed = 2.2 + Math.random() * 7.5;
+      const lift = 1.1 + Math.random() * 7.2;
+      sparkVelocities[i * 3] = Math.cos(a) * speed;
+      sparkVelocities[i * 3 + 1] = lift;
+      sparkVelocities[i * 3 + 2] = Math.sin(a) * speed * .62;
+      sparkSeeds[i] = Math.random();
+    }
+    sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+    const sparks = new THREE.Points(sparkGeo, new THREE.PointsMaterial({
+      color: 0xdff4ff, size: mobile ? .075 : .06, transparent: true, opacity: 0,
+      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+    }));
+    sparks.frustumCulled = false;
+    scene.add(sparks);
+
+    // Zone B: the light wall — tall industrial strips on the right, each with its own personality.
+    const bars = [];
+    const wallGroup = new THREE.Group(); scene.add(wallGroup);
+    const barGeo = new THREE.BoxGeometry(.06, 9.4, .05);
+    for (let i = 0; i < 9; i++){
+      const white = i % 3 === 0;
+      const mat = new THREE.MeshBasicMaterial({color: white ? 0xe4f2ff : 0x7aa8d6, transparent: true, opacity: .5, fog: false});
+      const bar = new THREE.Mesh(barGeo, mat); bar.position.set(9.4 + i * .52, .35, -3.7 - (i % 2) * .25);
+      wallGroup.add(bar);
+      const ghost = new THREE.Mesh(barGeo, mat); ghost.position.copy(bar.position); mirror.add(ghost);
+      bars.push({mat, base: white ? .95 : .55, phase: i * 1.73});
+    }
+    const wallRailMat = new THREE.MeshBasicMaterial({color: 0x14232f, transparent: true, opacity: .55});
+    for (let j = 0; j < 3; j++){
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(5.4, .02, .03), wallRailMat); rail.position.set(11.6, 3.6 - j * 3.4, -3.85); wallGroup.add(rail);
+    }
+
+    // Corridor strips for the chase shot. Hidden except during Experience I.
+    const corridor = [];
+    const corridorGeo = new THREE.BoxGeometry(.07, 8.8, .06);
+    for (let i = 0; i < 7; i++){
+      const mat = new THREE.MeshBasicMaterial({color: i % 2 ? 0xdcecff : 0x82aedd, transparent: true, opacity: 0, fog: false});
+      const m = new THREE.Mesh(corridorGeo, mat); m.position.set(5.4 + (i % 2) * .5, .4, 15.5 - i * 2.4); scene.add(m);
+      const g = new THREE.Mesh(corridorGeo, mat); g.position.copy(m.position); mirror.add(g);
+      corridor.push({mat, phase: i * 2.3});
+    }
+
+    // Zone D: thin light shafts (billboarded each frame) and fog banks that vary by zone.
+    const shafts = [];
+    [[7.9, -3.3, 1.0], [9.8, -3.6, .8], [11.7, -3.8, 1.0], [13.4, -4.0, .7]].forEach((s, i) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 12), new THREE.MeshBasicMaterial({map: shaftTex, transparent: true, opacity: .05, blending: THREE.AdditiveBlending, depthWrite: false, fog: false}));
+      m.position.set(s[0], 1.2, s[1]); scene.add(m); shafts.push({mesh: m, bar: i * 2 + 1, gain: s[2]});
+    });
+    const fogBanks = [];
+    [[11, -2.6, -5, 16, 6, .055], [14, -1.2, -8, 18, 8, .05], [5.5, -3.7, -3, 12, 4.5, .04], [-3, -3.9, -10, 22, 5, .03]].forEach(f => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(f[3], f[4]), new THREE.MeshBasicMaterial({map: radialTex, color: 0x6f95b8, transparent: true, opacity: f[5], blending: THREE.AdditiveBlending, depthWrite: false, fog: false}));
+      m.position.set(f[0], f[1], f[2]); scene.add(m); fogBanks.push({mesh: m, base: f[5]});
+    });
+    const impactPuff = new THREE.Mesh(new THREE.PlaneGeometry(20, 6), new THREE.MeshBasicMaterial({map: radialTex, color: 0xaecdf0, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false}));
+    impactPuff.position.set(0, -3.6, -1.4); scene.add(impactPuff);
+
+    // SECTION ARTIFACTS — one authored 3D sculpture per chapter, with a distinct visual grammar.
+    // They are staged in camera space so each chapter has a strong, legible silhouette without
+    // covering the particle typography. Shared geometries/material families keep the scene efficient.
+    const artifactGroups = [];
+    const artifactMats = {
+      // Matte to match the spheres: dielectric and rough, so the sculptures read as machined
+      // stock rather than chrome. The cyan accent keeps a little more sheen because it is an
+      // emissive signal element, not a surface.
+      steel: new THREE.MeshStandardMaterial({color:0x5c6672, metalness:.10, roughness:.88, envMapIntensity:.12, emissive:0x0a1016, emissiveIntensity:.35}),
+      bright: new THREE.MeshStandardMaterial({color:0xa3b4c2, metalness:.08, roughness:.80, envMapIntensity:.15, emissive:0x16222c, emissiveIntensity:.40}),
+      cyan: new THREE.MeshStandardMaterial({color:0x5fc9db, metalness:.05, roughness:.70, envMapIntensity:.10, emissive:0x0b5f72, emissiveIntensity:1.0}),
+      dark: new THREE.MeshStandardMaterial({color:0x1e242b, metalness:.10, roughness:.92, envMapIntensity:.10, emissive:0x070b10, emissiveIntensity:.30}),
+      glow: new THREE.MeshBasicMaterial({color:0x73dff2, transparent:true, opacity:.72, blending:THREE.AdditiveBlending, depthWrite:false}),
+      glowLine: new THREE.LineBasicMaterial({color:0x73dff2, transparent:true, opacity:.55, blending:THREE.AdditiveBlending, depthWrite:false})
+    };
+    const artifactGeo = {
+      sphere: new THREE.SphereGeometry(.52, 24, 16),
+      smallSphere: new THREE.SphereGeometry(.13, 12, 8),
+      torus: new THREE.TorusGeometry(1.05,.035,8,72),
+      thinTorus: new THREE.TorusGeometry(.72,.012,6,64),
+      ico: new THREE.IcosahedronGeometry(.75,1),
+      octa: new THREE.OctahedronGeometry(.75,1),
+      dodeca: new THREE.DodecahedronGeometry(.72,0),
+      box: new THREE.BoxGeometry(1,1,1),
+      cylinder: new THREE.CylinderGeometry(.24,.32,1.35,12,1),
+      knot: new THREE.TorusKnotGeometry(.58,.16,80,10,2,3),
+      cone: new THREE.ConeGeometry(.46,1.15,6,1),
+      ring: new THREE.TorusGeometry(.85,.09,10,48)
+    };
+    function addArtifactMesh(group, geo, mat, pos, scale, rot){
+      const m = new THREE.Mesh(geo, mat.clone());
+      m.position.set(pos[0],pos[1],pos[2]); m.scale.set(scale[0],scale[1],scale[2]);
+      if(rot) m.rotation.set(rot[0],rot[1],rot[2]);
+      m.userData.baseRotation = m.rotation.clone(); group.add(m); return m;
+    }
+    function addArtifactLink(group, a, b, material){
+      const pts=[new THREE.Vector3(...a),new THREE.Vector3(...b)];
+      const geo=new THREE.BufferGeometry().setFromPoints(pts);
+      const line=new THREE.Line(geo,material.clone()); group.add(line); return line;
+    }
+    function buildArtifact(index){
+      const g=new THREE.Group(); g.userData.chapter=index;
+      const hero=[artifactGeo.ico,artifactGeo.dodeca,artifactGeo.octa,artifactGeo.knot,artifactGeo.box,artifactGeo.sphere,artifactGeo.torus,artifactGeo.cylinder,artifactGeo.dodeca,artifactGeo.ico,artifactGeo.knot,artifactGeo.octa,artifactGeo.sphere,artifactGeo.ring][index];
+      addArtifactMesh(g,hero,index%3===0?artifactMats.bright:artifactMats.steel,[0,0,0],[1.05,1.05,1.05],[.2,.3,.1]);
+      // Three orbital planes give every sculpture parallax and readable scale.
+      for(let r=0;r<3;r++){
+        const ring=addArtifactMesh(g,r===1?artifactGeo.thinTorus:artifactGeo.torus,r===2?artifactMats.cyan:artifactMats.bright,[0,0,0],[1.08+r*.2,1.08+r*.2,1],[.42+r*.48,.2+r*.63,.18+r*.3]);
+        ring.userData.orbitSpeed=(r%2?-.22:.16)*(1+index*.035);
+      }
+      // Chapter-specific silhouettes: orbital satellites, modular blocks, connected systems, or stacked forms.
+      const n=5+(index%4);
+      for(let j=0;j<n;j++){
+        const a=j/n*Math.PI*2, rad=1.45+(j%2)*.22;
+        const p=[Math.cos(a)*rad,Math.sin(a)*rad*.78,Math.sin(a*2+index)*.32];
+        const geo=(index%4===0)?artifactGeo.box:(index%4===1)?artifactGeo.smallSphere:(index%4===2)?artifactGeo.octa:artifactGeo.cone;
+        const mat=j%3===0?artifactMats.cyan:(j%2?artifactMats.dark:artifactMats.bright);
+        const satellite=addArtifactMesh(g,geo,mat,p,[.22+(j%3)*.08,.22+(j%3)*.08,.22+(j%3)*.08],[a*.3,a,0]);
+        satellite.userData.orbitAngle=a; satellite.userData.orbitRadius=rad; satellite.userData.satellite=j;
+        if(j%2===0) addArtifactLink(g,[0,0,0],p,artifactMats.glowLine);
+      }
+      // A technical halo, precision ticks, and floating detail points complete the art direction.
+      addArtifactMesh(g,artifactGeo.thinTorus,artifactMats.glow,[0,0,0],[1.9,1.9,1],[Math.PI/2,0,index*.12]);
+      for(let j=0;j<8;j++){
+        const a=j*Math.PI/4, r=2.05;
+        addArtifactMesh(g,artifactGeo.smallSphere,artifactMats.cyan,[Math.cos(a)*r,Math.sin(a)*r,Math.cos(a*2)*.25],[.55,.55,.55],[0,a,0]);
+      }
+      g.traverse(o=>{ if(o.material){o.material.transparent=true; o.userData.baseOpacity=o.material.opacity===undefined?1:o.material.opacity; o.material.opacity=0;} });
+      scene.add(g); artifactGroups.push(g);
+    }
+    for(let i=0;i<SECTION_COUNT;i++) buildArtifact(i);
+
+    // Dust: invisible in the void, only obvious when a beam catches it. Impacts throw up a local wake.
+    const dustCount = mobile ? 500 : 1200;
+    const dustGeo = new THREE.BufferGeometry();
+    const dPos = new Float32Array(dustCount * 3), dSeed = new Float32Array(dustCount);
+    for (let i = 0; i < dustCount; i++){
+      dPos[i * 3] = (Math.random() - .5) * 56; dPos[i * 3 + 1] = -4.2 + Math.random() * 13.4; dPos[i * 3 + 2] = -18 + Math.random() * 40; dSeed[i] = Math.random();
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3)); dustGeo.setAttribute('aSeed', new THREE.BufferAttribute(dSeed, 1));
+    const dustUniforms = {
+      uTime: {value: 0}, uImpact: {value: 0}, uScale: {value: 900},
+      uBeams: {value: [new THREE.Vector3(7.9, -3.3, 0), new THREE.Vector3(9.8, -3.6, 0), new THREE.Vector3(11.7, -3.8, 0), new THREE.Vector3(13.4, -4, 0)]}
+    };
+    const dust = new THREE.Points(dustGeo, new THREE.ShaderMaterial({
+      uniforms: dustUniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: `
+        attribute float aSeed; uniform float uTime, uImpact, uScale; uniform vec3 uBeams[4];
+        varying float vLit; varying float vFade;
+        void main(){
+          vec3 p = position;
+          p.y = -4.2 + mod(position.y + 4.2 + uTime * (.02 + .07 * aSeed), 13.4);
+          p.x += sin(uTime * .07 * (.5 + aSeed) + aSeed * 40.) * .9 + sin(uTime * .025 + aSeed * 18.) * .28;
+          p.z += cos(uTime * .05 + aSeed * 31.) * .6;
+          float lit = .05;
+          for (int i = 0; i < 4; i++){ vec2 d = p.xz - uBeams[i].xy; lit += uBeams[i].z * exp(-dot(d, d) * .06); }
+          lit += uImpact * exp(-(p.y + 4.4) * .35) * exp(-dot(p.xz, p.xz) * .012);
+          vLit = clamp(lit, 0., 1.);
+          vec4 mv = modelViewMatrix * vec4(p, 1.);
+          vFade = exp(-length(mv.xyz) * .03);
+          gl_PointSize = (.03 + aSeed * .05) * uScale / max(.5, -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        varying float vLit; varying float vFade;
+        void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .08, d); gl_FragColor = vec4(vec3(.64, .8, .96), a * vLit * vFade); }`
+    }));
+    dust.frustumCulled = false; scene.add(dust);
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // THE ACTORS — polished metal spheres. One instanced mesh for letterforms, one for geometric accents.
+    // ───────────────────────────────────────────────────────────────────────────
+    const N = mobile ? 3600 : 7600, M = mobile ? 270 : 570;
+    const SPHERE_RADIUS = mobile ? .017 : .019;
+    const sphereGeometry = new THREE.SphereGeometry(SPHERE_RADIUS, 10, 8);
+    // Matte, rough finish — cast graphite rather than polished bearing. The important switch is
+    // metalness: near 1 the sphere has no diffuse term at all and its brightness is whatever it
+    // reflects, which is what made everything read as chrome. Dropping it to a dielectric puts
+    // the form back in diffuse shading, so each ball gets an honest lit side, terminator and
+    // shadow side, and a very high roughness spreads the remaining specular into a soft sheen
+    // instead of a mirror glint.
+    // Because of that switch the base colour has to come UP: at high metalness the albedo barely
+    // showed, but a dielectric renders its colour directly, so the old near-black would now go
+    // flat dark. (This three.js build — r128 — does not wire InstancedMesh.setColorAt into the
+    // standard material shader, so per-sphere colour lives on the material, not per-instance.)
+    const sphereMaterial = new THREE.MeshStandardMaterial({color: 0x45494f, metalness: .06, roughness: .94, envMapIntensity: .10, emissive: 0x07090c, emissiveIntensity: .35});
+    const mirrorMaterial = new THREE.MeshStandardMaterial({color: 0x23262a, metalness: .05, roughness: .97, envMapIntensity: .05, emissive: 0x040506, emissiveIntensity: .18});
+
+    const letterMesh = new THREE.InstancedMesh(sphereGeometry, sphereMaterial, N);
+    const decorMesh = new THREE.InstancedMesh(sphereGeometry, sphereMaterial, M);
+    letterMesh.frustumCulled = false; decorMesh.frustumCulled = false;
+    // The type lives in a yawing stage group: the camera can travel all the way around the
+    // subject while the formation turns to meet the lens, so the headline stays readable.
+    const stage = new THREE.Group(); scene.add(stage); stage.add(letterMesh, decorMesh);
+    // Reflection copies share the very same instance buffers.
+    const letterMirror = new THREE.InstancedMesh(sphereGeometry, mirrorMaterial, N);
+    const decorMirror = new THREE.InstancedMesh(sphereGeometry, mirrorMaterial, M);
+    letterMirror.instanceMatrix = letterMesh.instanceMatrix; letterMirror.instanceColor = letterMesh.instanceColor;
+    decorMirror.instanceMatrix = decorMesh.instanceMatrix; decorMirror.instanceColor = decorMesh.instanceColor;
+    letterMirror.frustumCulled = false; decorMirror.frustumCulled = false;
+    // A rotation about Y commutes with the mirror's Y flip, so the reflection stays correct.
+    const stageMirror = new THREE.Group(); mirror.add(stageMirror); stageMirror.add(letterMirror, decorMirror);
+    letterMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); decorMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    const lm = letterMesh.instanceMatrix.array, dm_ = decorMesh.instanceMatrix.array;
+    for (let i = 0; i < N; i++) lm[i * 16 + 15] = 1;
+    for (let i = 0; i < M; i++) dm_[i * 16 + 15] = 1;
+
+    const P = new Float32Array(N * 3), V = new Float32Array(N * 3);
+    const DP = new Float32Array(M * 3), DV = new Float32Array(M * 3);
+    const RMAX = Math.max(N, M);
+    const rA = new Float32Array(RMAX), rB = new Float32Array(RMAX), rC = new Float32Array(RMAX);
+    for (let i = 0; i < RMAX; i++){ rA[i] = Math.random(); rB[i] = Math.random(); rC[i] = Math.random(); }
+    const targets = [], targetSizes = [], decorTargets = [];
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // TYPE → PARTICLE TARGETS
+    // ───────────────────────────────────────────────────────────────────────────
+    const PX = mobile ? .0150 : .0135;   // canvas pixel → world unit for the particle type
+                                        // (larger on mobile: a portrait frame is wide in world
+                                        //  units, so the type needs more of it to carry weight)
+    const LINE_FIT = .70;                 // longest a line may run across the raster canvas
+    // Each line is sampled on its own grid and gets its own bead size, so a headline and the
+    // small line under it both resolve into readable strokes. One bead size for the whole
+    // composition is what turns secondary lines into mush: the stroke of a small glyph is only
+    // a bead or two wide, and the grid aliases against it.
+    function rasterizeTextToPoints(lines){
+      const canvas = document.createElement('canvas'); canvas.width = 1800; canvas.height = 760;
+      const ctx = canvas.getContext('2d', {willReadFrequently: true});
+      ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const scale = mobile ? .91 : 1.17;
+      // A bead has to subtend a couple of screen pixels to read as a bead, so it cannot shrink
+      // with the type. That fixes a floor on cap height: below it a stroke is one bead wide and
+      // the line turns to mush. Detail belongs in the dossier; the type stays short and large.
+      const MIN_CAP = mobile ? 34 : 44;
+      const lineSizes = lines.map(l => Math.max(l.size * scale, MIN_CAP));
+      const totalHeight = lineSizes.reduce((a, b) => a + b, 0) + (lines.length - 1) * 38 * scale;
+      let y = (canvas.height - totalHeight) / 2;
+      const bands = [];
+      lines.forEach((line, i) => {
+        let fontSize = lineSizes[i];
+        // Tracking keeps adjacent glyphs from fusing once they are drawn as discrete beads.
+        // Unsupported in older engines, where the assignment is simply ignored.
+        ctx.letterSpacing = `${Math.max(1.5, fontSize * .055).toFixed(2)}px`;
+        ctx.font = `800 ${fontSize}px Manrope, Arial, sans-serif`;
+        while (ctx.measureText(line.text).width > canvas.width * LINE_FIT && fontSize > 12){ fontSize -= 1; ctx.font = `800 ${fontSize}px Manrope, Arial, sans-serif`; }
+        y += fontSize / 2; ctx.fillText(line.text, canvas.width / 2, y);
+        // The band is wider than the cap height but narrower than the line gap, so bands never overlap.
+        bands.push({top: Math.max(0, Math.round(y - fontSize * .6)), bot: Math.min(canvas.height, Math.round(y + fontSize * .6)), fs: fontSize});
+        y += fontSize / 2 + 38 * scale;
+      });
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const raw = [], rawScale = [];
+      for (let b = 0; b < bands.length; b++){
+        const band = bands[b];
+        // Aim for roughly three beads across a stroke, and size the bead to the sample pitch
+        // so neighbours just touch: a bead chain reads as a letterform, a finer grid fuses it.
+        const stp = Math.min(5, Math.max(3, Math.round(band.fs * .045)));
+        const bead = Math.max(1, stp * PX / (2 * SPHERE_RADIUS));
+        for (let yy = band.top; yy < band.bot; yy += stp) for (let xx = 0; xx < canvas.width; xx += stp){
+          if (data[(yy * canvas.width + xx) * 4 + 3] > 90){
+            raw.push((xx - canvas.width / 2) * PX, -(yy - canvas.height / 2) * PX); rawScale.push(bead);
+          }
+        }
+      }
+      const pos = new Float32Array(N * 3), sz = new Float32Array(N).fill(1);
+      const count = raw.length / 2;
+      if (!count) return {pos, sz};
+      for (let i = 0; i < N; i++){
+        // Surplus spheres double up on a point rather than scattering around it: hidden inside
+        // the bead, and perfectly in step with it through a morph.
+        const k = count >= N ? Math.floor((i + .5) * count / N) : i % count;
+        pos[i * 3] = raw[k * 2]; pos[i * 3 + 1] = raw[k * 2 + 1]; pos[i * 3 + 2] = 0;
+        sz[i] = rawScale[k];
+      }
+      return {pos, sz};
+    }
+
+    // Geometric accents made of the same metal spheres: rings, frames, rails, twin columns, helices, outlines, halos.
+    function decorPoint(layout, j, count, o){
+      const t = j / count; let x = 0, y = 0, z = -.3 + Math.sin(j * 1.7) * .1;
+      switch (layout){
+        case 'ring': { const ring = j % 3, a = Math.floor(j / 3) / (count / 3) * 6.2831853; x = Math.cos(a) * (9.6 + ring * .5); y = Math.sin(a) * (4.7 + ring * .25); z = -1.5 - ring * .3; break; }
+        case 'frame': case 'outline': { const w = layout === 'frame' ? 9.4 : 9.0, h = layout === 'frame' ? 4.3 : 4.1, edge = j % 4, q = Math.floor(j / 4) / Math.max(1, Math.ceil(count / 4) - 1);
+          if (edge === 0){ x = -w + 2 * w * q; y = h; } else if (edge === 1){ x = w; y = h - 2 * h * q; } else if (edge === 2){ x = w - 2 * w * q; y = -h; } else { x = -w; y = -h + 2 * h * q; }
+          z = layout === 'frame' ? -.3 : -.2; break; }
+        case 'rails': { const side = j % 2 ? 1 : -1; x = (t - .5) * 21; y = side * (4.15 + Math.sin(t * 25.13) * .1); z = -.3; break; }
+        case 'twin': { const side = j % 2 ? 1 : -1; x = side * 9.9 + Math.sin(j * .3) * .25; y = (Math.floor(j / 2) / (count / 2) - .5) * 8.8; z = -.5; break; }
+        case 'helix': { const k = Math.floor(j / 2), side = k % 2 ? 1 : -1, strand = j % 2; y = (Math.floor(k / 2) / (count / 4) - .5) * 9; const psi = y * 1.6 + strand * Math.PI; x = side * 10 + Math.cos(psi) * .9; z = -.3 + Math.sin(psi) * .9; break; }
+        default: { const a = j * 2.39996, rad = .85 + ((j * 7) % 13) / 13 * .4; x = Math.cos(a) * 10.4 * rad; y = Math.sin(a) * 5 * rad; z = -.6 - ((j * 5) % 11) / 11 * 3.2; }
+      }
+      o[j * 3] = x; o[j * 3 + 1] = y; o[j * 3 + 2] = z;
+    }
+    function buildDecor(si){ const set = new Float32Array(M * 3); for (let j = 0; j < M; j++) decorPoint(PORTFOLIO_DATA.sections[si].layout, j, M, set); return set; }
+
+    function setLoader(pct, label){ loaderBar.style.width = `${pct}%`; loaderCaption.textContent = label; }
+    async function buildTargets(){
+      try { await Promise.race([document.fonts.load('800 60px Manrope'), new Promise(r => setTimeout(r, 2500))]); } catch (e) {}
+      for (let i = 0; i < SECTION_COUNT; i++){
+        const raster = rasterizeTextToPoints(PORTFOLIO_DATA.sections[i].lines);
+        targets.push(raster.pos); targetSizes.push(raster.sz); decorTargets.push(buildDecor(i));
+        setLoader(Math.round((i + 1) / SECTION_COUNT * 90), `BLOCKING SHOT ${String(i + 1).padStart(2, '0')} / ${String(SECTION_COUNT).padStart(2, '0')}`);
+        await new Promise(r => setTimeout(r, 0));
+      }
+      setLoader(100, 'CAMERA READY');
+      setTimeout(() => loader.classList.add('hidden'), 340);
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // MOTION LIBRARY — easing, waypoint routing, and per-shot particle choreography.
+    // Every choreography is a deterministic function of shot time t (0→1), so scrolling
+    // back and forth replays the same beats and the camera impact always lands on the
+    // same frame as the particle impact.
+    // ───────────────────────────────────────────────────────────────────────────
+    const cl01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
+    const S = (a, b, x) => { x = cl01((x - a) / (b - a)); return x * x * (3 - 2 * x); };
+    const eio = x => x * x * (3 - 2 * x);
+    const eoutBack = x => { const y = x - 1; return 1 + 2.7 * y * y * y + 1.7 * y * y; };
+    const fract = x => x - Math.floor(x);
+    const TAU = Math.PI * 2;
+    const wrapPi = a => a - TAU * Math.round(a / TAU);
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // CHOREOGRAPHY TABLES — stable per-particle constants for the signature styles.
+    // A unit direction (shells and jets), a balanced group id, a ring phase with its
+    // cos/sin already resolved, a helix phase, and a low-discrepancy parameter for even
+    // spacing along strands, columns and streams. Built once from the same seeded
+    // randoms the rest of the film uses, so every choreography stays a pure function of
+    // (t, particle id) — nothing accumulates and scrubbing backwards replays exactly.
+    // ───────────────────────────────────────────────────────────────────────────
+    const uX = new Float32Array(RMAX), uY = new Float32Array(RMAX), uZ = new Float32Array(RMAX);
+    const pcos = new Float32Array(RMAX), psin = new Float32Array(RMAX);
+    const hcos = new Float32Array(RMAX), hsin = new Float32Array(RMAX);
+    const pU = new Float32Array(RMAX), gIdx = new Uint8Array(RMAX);
+    for (let i = 0; i < RMAX; i++){
+      const zz = rA[i] * 2 - 1, aa = rB[i] * TAU, ss = Math.sqrt(Math.max(0, 1 - zz * zz));
+      uX[i] = Math.cos(aa) * ss; uY[i] = zz; uZ[i] = Math.sin(aa) * ss;
+      const ph = rC[i] * TAU; pcos[i] = Math.cos(ph); psin[i] = Math.sin(ph);
+      const u = (i * 0.6180339887498949) % 1;   // golden-ratio spacing: never clumps, never banded
+      pU[i] = u;
+      hcos[i] = Math.cos(u * 7.4); hsin[i] = Math.sin(u * 7.4);
+      gIdx[i] = i % 3;                          // exact thirds, so every stream carries equal load
+    }
+    // A colonnade footprint, reused by the cathedral choreography.
+    const NCOL = 14, COLX = new Float32Array(NCOL), COLZ = new Float32Array(NCOL);
+    for (let c = 0; c < NCOL; c++){ const a = c / NCOL * TAU; COLX[c] = Math.cos(a) * 8.2; COLZ[c] = Math.sin(a) * 6.0; }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // PER-FRAME STYLE SETUP — everything constant across the 7,600 particles (phase
+    // weights, group spins, tilts, attractor position) is resolved once per frame here
+    // so shapeRaw() stays a handful of multiply-adds per sphere. This is also the only
+    // place a shot's `sp` parameters reach the choreography, which is what lets one
+    // signature style read completely differently in two different transitions.
+    // ───────────────────────────────────────────────────────────────────────────
+    const GC = new Float32Array(6), GS = new Float32Array(6);   // group spin cos/sin
+    const HC = new Float32Array(6), HS = new Float32Array(6);   // group tilt / precession cos/sin
+    const GZ = new Float32Array(6);                             // group depth
+    let W1 = 0, W2 = 0, W3 = 0, W4 = 0, W5 = 0;                 // phase weights
+    let K0 = 0, K1 = 0, K2 = 0, CE = 1, SE = 0;                 // style scalars
+    let MIR = 1, VD = 1, CXa = 0, CYa = 0, CZa = 0;             // shot parameters
+
+    function prepStyle(style, t, shot){
+      if (style < 30) return;
+      const sp = (shot && shot.sp) || null;
+      MIR = sp && sp.mir ? sp.mir : 1;
+      VD = sp && sp.vd ? sp.vd : 1;
+      switch (style){
+        case 30: {  // EVENT HORIZON
+          const res = !!(sp && sp.resolve);
+          // The shells have to finish unwrapping into rings BEFORE the lens reaches them,
+          // otherwise the camera arrives inside a sphere shell and the aperture never reads as
+          // structure — it just looks like the lens is lost in a cloud.
+          W1 = S(0, .14, t); W2 = S(.06, .26, t); W3 = S(.22, .42, t);
+          W4 = res ? 0 : S(.46, .68, t);                 // the flyby overlaps the crossing, so the
+          W5 = S(res ? .50 : .70, res ? .88 : .90, t);   // frame is never empty during the passage
+          K0 = res ? 2.0 + 6.4 * S(.30, .54, t) * (1 - S(.52, .86, t)) : 2.6 + 7.4 * S(.20, .42, t);
+          for (let g = 0; g < 3; g++){
+            const a = t * (g === 0 ? 2.3 : g === 1 ? -1.75 : 1.15);         // shells counter-rotate
+            GC[g] = Math.cos(a); GS[g] = Math.sin(a);
+            const r = (g & 1 ? -t : t) * .8 + g * 2.0943951;                 // ring swirl + 120° offset
+            HC[g] = Math.cos(r); HS[g] = Math.sin(r);
+          }
+          CE = Math.cos(1.6); SE = Math.sin(1.6);
+          break;
+        }
+        case 31: {  // HELIX REACTOR
+          W1 = S(0, .18, t); W2 = S(.14, .42, t); W3 = S(.38, .62, t); W4 = S(.56, .78, t); W5 = S(.70, .90, t);
+          K0 = 5.8 - 2.4 * S(.42, .80, t);                                   // the bundle tightens
+          for (let g = 0; g < 3; g++){
+            const a = t * 3.0 * VD + g * 2.0943951;
+            GC[g] = Math.cos(a); GS[g] = Math.sin(a);
+          }
+          CE = Math.cos(1.9); SE = Math.sin(1.9);                            // counter-rotation
+          HC[0] = Math.cos(2.0943951); HS[0] = Math.sin(2.0943951);          // strand-to-strand handover
+          break;
+        }
+        case 32: {  // SHOCKWAVE CASCADE
+          K0 = MIR * (-11.5 + 24 * S(.05, .45, t));                          // wavefront position
+          W5 = S(.66, .90, t);
+          break;
+        }
+        case 33: {  // GATE TUNNEL
+          W1 = S(0, .12, t); W2 = S(.06, .28, t); W3 = S(.26, .52, t); W4 = S(.56, .78, t); W5 = S(.70, .90, t);
+          GZ[0] = 2; GZ[1] = -2; GZ[2] = -6;
+          for (let g = 0; g < 3; g++){
+            const a = t * (1.5 + g * .9) * (g & 1 ? -1 : 1);                 // each gate spins its own way
+            GC[g] = Math.cos(a); GS[g] = Math.sin(a);
+            const tilt = (g * .5 + .25) + t * 1.25 * (g === 1 ? -1 : 1);     // and reorients as you pass it
+            HC[g] = Math.cos(tilt); HS[g] = Math.sin(tilt);
+          }
+          const wa = t * .6; GC[3] = Math.cos(wa); GS[3] = Math.sin(wa);     // the tube's own slow twist
+          K2 = 7 - 18 * S(.20, .62, t);                                      // a squeeze travelling the tube
+          break;
+        }
+        case 34: {  // GYROSCOPE
+          W1 = S(0, .16, t); W2 = S(.12, .38, t); W3 = S(.34, .60, t); W4 = S(.54, .78, t); W5 = S(.70, .90, t);
+          for (let g = 0; g < 3; g++){
+            const a = t * (2.4 - g * .7) * (g === 1 ? -1 : 1);               // ring rotation
+            GC[g] = Math.cos(a); GS[g] = Math.sin(a);
+            const pr = t * (.9 + g * .45);                                   // axis precession
+            HC[g] = Math.cos(pr); HS[g] = Math.sin(pr);
+          }
+          break;
+        }
+        case 35: {  // CATHEDRAL
+          W1 = S(0, .20, t); W2 = S(.14, .40, t); W5 = S(.70, .92, t);
+          K0 = S(.56, .84, t);                                               // the arch closes overhead
+          break;
+        }
+        case 36: {  // SINGULARITY
+          CXa = sp && sp.cx !== undefined ? sp.cx : -12;
+          CYa = sp && sp.cy !== undefined ? sp.cy : .4;
+          CZa = sp && sp.cz !== undefined ? sp.cz : -1;
+          W1 = S(0, .16, t); W2 = S(.12, .44, t); W3 = S(.40, .53, t); W4 = S(.50, .72, t); W5 = S(.64, .90, t);
+          K0 = 1 - .93 * W2;                                                 // in-fall
+          K1 = 16 * W4;                                                      // jet reach
+          for (let g = 0; g < 3; g++){
+            const a = (3.0 + 5.0 * W2) * (g === 1 ? -1 : 1) * (1 + g * .22); // accretion spin, accelerating
+            GC[g] = Math.cos(a); GS[g] = Math.sin(a);
+          }
+          break;
+        }
+        case 37: {  // SHEAR STACK
+          W1 = S(0, .16, t); W2 = S(.12, .38, t); W3 = S(.34, .58, t); W4 = S(.52, .74, t); W5 = S(.66, .90, t);
+          for (let s = 0; s < 4; s++){
+            const a = (s - 1.5) * .42 * MIR * W4;                            // slabs fan like opening pages
+            GC[s] = Math.cos(a); GS[s] = Math.sin(a);
+          }
+          break;
+        }
+      }
+    }
+
+    // DRAMA is the global choreography amplitude. It drops toward 0 when the viewer is
+    // scrolling fast, which collapses every shot to a direct, legible morph instead of a
+    // blur of half-finished formations. It returns to 1 as soon as they slow down.
+    let DRAMA = 1;
+
+    const WP = new Float32Array(18), TT = new Float32Array(10), TE = new Uint8Array(5);
+    const O = {x: 0, y: 0, z: 0, k: 22};
+    function wp(k, x, y, z){ WP[k * 3] = x; WP[k * 3 + 1] = y; WP[k * 3 + 2] = z; }
+    function leg(k, a, b, over){ TT[k * 2] = a; TT[k * 2 + 1] = b; TE[k] = over ? 1 : 0; }
+    function route(n, t){
+      let x = WP[0], y = WP[1], z = WP[2];
+      for (let k = 0; k < n; k++){
+        let u = cl01((t - TT[k * 2]) / (TT[k * 2 + 1] - TT[k * 2])); u = TE[k] ? eoutBack(u) : u * u * (3 - 2 * u);
+        x += (WP[k * 3 + 3] - x) * u; y += (WP[k * 3 + 4] - y) * u; z += (WP[k * 3 + 5] - z) * u;
+      }
+      O.x = x; O.y = y; O.z = z;
+    }
+
+    // A library of choreographies; each shot picks the one that suits its camera move.
+    // 0 disassemble · 1 rails · 2 retract into dark · 3 drop/impact/pulse · 4 dual structures · 5 helix ·
+    // 6 beam→line→outline · 7 depth layers · 8 vertical streams · 9 chase · 10 pull from far edges ·
+    // 11 calm · 12 low wave · 13 held orbit
+    // 20 = opening materialization · 21 = reduced-motion cross-fade
+    function shapeRaw(style, A, B, i3, ri, t){
+      const ax = A[i3], ay = A[i3 + 1], az = A[i3 + 2], bx = B[i3], by = B[i3 + 1], bz = B[i3 + 2];
+      const r1 = rA[ri], r2 = rB[ri], r3 = rC[ri];
+      switch (style){
+        case 0: { // outer contours let go first; the spheres stay a coherent, swirling cloud
+          const rr = cl01(Math.sqrt(ax * ax * .3 + ay * ay) / 8.5), delay = (1 - rr) * .3;
+          const u = cl01((t - delay) / .66), e = eio(u), ph = Math.sin(u * Math.PI);
+          let x = ax + (bx - ax) * e, y = ay + (by - ay) * e, z = az + (bz - az) * e;
+          const ang = ph * (1.4 + r1 * 1.4), c = Math.cos(ang), s = Math.sin(ang);
+          O.x = x * c + z * s; O.z = -x * s + z * c + ph * (r2 - .5) * 4.4; O.y = y + ph * (r3 - .5) * 2; return;
+        }
+        case 1: { // stretch into horizontal rails, then snap into legible letterforms; a few foreground spheres race past
+          const ry = (Math.floor(r1 * 6) - 2.5) * 1.25, fg = r2 > .88;
+          wp(0, ax, ay, az); wp(1, ax * 1.8 + (fg ? -10 : 0), ry, az + (fg ? 6 + r3 * 4 : 0)); wp(2, bx, by, bz);
+          leg(0, 0, .4); leg(1, .46 + r3 * .04, .8); route(2, t); return;
+        }
+        case 2: { // rails retract toward the void side; the next title is assembled out of the dark
+          const ry = (Math.floor(r1 * 6) - 2.5) * 1.25;
+          wp(0, ax, ay, az); wp(1, -26 - r2 * 6, ry, -5 - r3 * 3); wp(2, bx, by, bz);
+          leg(0, .02 + r3 * .06, .46); leg(1, .5 + r1 * .1, .84 + r1 * .1); route(2, t); return;
+        }
+        case 3: { // THE SPHERE DROP — anticipation, free fall, impact scatter, overhead aftermath, pulse hops, clustered rise
+          if (t < .09){
+            const s = S(0, .09, t), pl = .045 * s;
+            O.x = ax * (1 - pl) + Math.sin(t * 160 + r1 * 40) * .025 * s; O.y = ay * (1 - pl) + Math.sin(t * 140 + r2 * 30) * .02 * s; O.z = az - .25 * s; O.k = 55; return;
+          }
+          O.k = 55;
+          const tau = Math.max(0, t - .09 - r3 * .035) * 5.5;
+          const x0 = ax * .955, y0 = ay * .955, z0 = az - .25;
+          const tf = Math.sqrt(Math.max(.25, y0 - FLOOR) / 15);
+          const ang = r1 * TAU, rad = Math.sqrt(r2) * 10.5, sx = Math.cos(ang) * rad, sz = -1.2 + Math.sin(ang) * rad * .42;
+          let x, y, z;
+          if (tau < tf){ x = x0; z = z0; y = y0 - 15 * tau * tau; }
+          else {
+            const s = tau - tf, sc = cl01(s / .9), eo = 1 - (1 - sc) * (1 - sc) * (1 - sc), bh = .22 + fract(r1 * 13.7) * .9, s2 = cl01((s - .9) / .45);
+            x = x0 + (sx - x0) * eo; z = z0 + (sz - z0) * eo;
+            y = FLOOR + bh * 4 * sc * (1 - sc) + bh * .3 * 4 * s2 * (1 - s2);
+            const dist = Math.sqrt(sx * sx + (sz + 1.2) * (sz + 1.2) * 5);
+            const q1 = cl01((t - (.43 + dist * .013)) / .05), q2 = cl01((t - (.55 + dist * .011)) / .05);
+            y += (.32 + .3 * fract(r1 * 9.1)) * 4 * q1 * (1 - q1) + (.45 + .3 * fract(r1 * 5.3)) * 4 * q2 * (1 - q2);
+            const c = Math.floor(r1 * 14), ta = .56 + c * .009;
+            if (t > ta){
+              const u = cl01((t - ta) / .2), e = eoutBack(u);
+              x = sx + (bx - sx) * e + Math.sin(u * Math.PI * 2 + c) * .9 * (1 - u);
+              y = FLOOR + (by - FLOOR) * e + Math.sin(u * Math.PI) * 1.4; z = sz + (bz - sz) * e;
+            }
+          }
+          O.x = x; O.y = y; O.z = z; return;
+        }
+        case 4: { // two structures from opposite sides: left forms first, right follows, then they synchronize
+          const side = bx < 0 ? -1 : 1, t0 = side < 0 ? .28 : .46;
+          wp(0, ax, ay, az); wp(1, ax * 1.3 + side * 12, (Math.floor(r1 * 8) - 3.5) * .95, az + (side < 0 ? -2 : 2)); wp(2, bx, by, bz);
+          leg(0, 0, t0 - .02); leg(1, t0 + r3 * .08, t0 + r3 * .08 + .3); route(2, t); return;
+        }
+        case 5: { // twist into a rotating helix in the darker part of the room, then build the next title out of it
+          const yh = (r1 - .5) * 9, psi = yh * 1.5 + (r2 > .5 ? Math.PI : 0) + t * 9;
+          wp(0, ax, ay, az); wp(1, -6.5 + Math.cos(psi) * 2.8, yh, -1 + Math.sin(psi) * 2.8); wp(2, bx, by, bz);
+          leg(0, 0, .32); leg(1, .5 + r1 * .14, .5 + r1 * .14 + .28); route(2, t); return;
+        }
+        case 6: { // collapse to a narrow beam → a line across the room → a precise rectangle → the statement
+          const s = r1 * 4, edge = Math.floor(s), f = s - edge, w = 8.8, h = 3.9, d = r3 * .04;
+          let rx, ry;
+          if (edge === 0){ rx = -w + 2 * w * f; ry = h; } else if (edge === 1){ rx = w; ry = h - 2 * h * f; } else if (edge === 2){ rx = w - 2 * w * f; ry = -h; } else { rx = -w; ry = -h + 2 * h * f; }
+          wp(0, ax, ay, az); wp(1, (r2 - .5) * .4, (r1 - .5) * 14, (r3 - .5) * .4); wp(2, (r1 - .5) * 32, 1.2 + (r2 - .5) * .08, (r3 - .5) * .15); wp(3, rx, ry, -.1); wp(4, bx, by, bz);
+          leg(0, d, .2 + d); leg(1, .22 + d, .42 + d); leg(2, .45 + d, .62 + d); leg(3, .66 + d, .9 + d); route(4, t); return;
+        }
+        case 7: { // four depth planes; the front plane moves first so parallax reveals real volume
+          const L = Math.floor(r1 * 4), zo = (1.5 - L) * 2.4;
+          wp(0, ax, ay, az); wp(1, ax, ay, az + zo); wp(2, bx, by, bz + zo); wp(3, bx, by, bz);
+          leg(0, 0, .26); leg(1, .28 + L * .05, .56 + L * .05); leg(2, .8, .96); route(3, t); return;
+        }
+        case 8: { // the old layer streams up and over; fresh streams rise from the floor and overshoot into the contours
+          wp(0, ax, ay, az); wp(1, ax * 1.1 + (r2 - .5) * 3, 9 + r3 * 4, az + 3 + r1 * 3); wp(2, bx + (r2 - .5) * 3.5, FLOOR + .05, bz - 1 + (r1 - .5) * 4); wp(3, bx, by, bz);
+          leg(0, r3 * .08, .28); leg(1, .3, .5); leg(2, .52 + r1 * .16, .8 + r1 * .16, true); route(3, t); return;
+        }
+        case 9: { // streams stretch toward the light wall, then arrive in clusters at different times
+          const c = Math.floor(r1 * 6);
+          wp(0, ax, ay, az); wp(1, 12 + r2 * 6, ay * .5, -5 - r3 * 5); wp(2, bx, by, bz);
+          leg(0, r3 * .05, .32); leg(1, .38 + c * .035, .74 + c * .035); route(2, t); return;
+        }
+        case 10: { // the formation is thrown behind the camera's overshoot, then pulled together from the far edges
+          const phi = Math.atan2(by, bx), R = 15 + r3 * 3;
+          wp(0, ax, ay, az); wp(1, ax * 1.35, ay * 1.35, -9 - r2 * 7); wp(2, Math.cos(phi) * R, Math.sin(phi) * R * .5, -3 - r2 * 2); wp(3, bx, by, bz);
+          leg(0, 0, .34); leg(1, .38, .56); leg(2, .58 + r1 * .1, .85 + r1 * .1); route(3, t); return;
+        }
+        case 11: { // outer rings loosen into a calm floor scatter, then rise quietly
+          wp(0, ax, ay, az); wp(1, ax * 1.2 + (r1 - .5) * 4, FLOOR + .02, az - 1 + (r2 - .5) * 7); wp(2, bx, by, bz);
+          leg(0, r3 * .06, .4); leg(1, .46 + r3 * .16, .78 + r3 * .16); route(2, t); return;
+        }
+        case 12: { // a low wave rolls toward a distant point; it reaches room-centre and rises into the closing formation
+          wp(0, ax, ay, az); wp(1, ax * 1.1, FLOOR + .02, az + (r2 - .5) * 5); wp(2, bx * .15 + (r1 - .5) * 2, FLOOR + .02, -6 + r2 * 3); wp(3, bx, by, bz);
+          leg(0, 0, .24); leg(1, .26, .48); leg(2, .52 + r3 * .18, .78 + r3 * .18); route(3, t); return;
+        }
+        case 13: { // HELD ORBIT — the formation keeps its shape while the camera travels around it,
+          // so the headline stays readable through the whole revolution, and only re-forms into the
+          // next one on the back half of the move. This is the choreography for the orbit sequences.
+          const d = r3 * .05, u = cl01((t - .6 - d) / .33), e = eio(u), ph = Math.sin(u * Math.PI);
+          const held = 1 - cl01(u * 2.6);
+          O.x = ax + (bx - ax) * e + ph * (r2 - .5) * .5;
+          O.y = ay + (by - ay) * e + ph * (r1 - .5) * .8 + Math.sin(ax * .8 + t * 5.6 + r1 * 6.3) * .03 * held;
+          O.z = az + (bz - az) * e + ph * (r3 - .5) * 1.3 + Math.cos(ay * .9 + t * 4.4 + r2 * 6.3) * .07 * held;
+          return;
+        }
+        // ═══════════════════════════════════════════════════════════════════════
+        // SIGNATURE CHOREOGRAPHY (30–37) — each is a five-phase event.
+        // Phases compose with the same successive-lerp form route() uses: every weight
+        // is a smoothstep, so each phase leaves and arrives with zero velocity and the
+        // handoffs are C1 continuous. Every target is a pure function of (t, particle
+        // id, A, B) — no accumulation, so reverse scrubbing replays exactly. Per-frame
+        // trigonometry is hoisted into prepStyle(), so these cost a few multiply-adds.
+        // ═══════════════════════════════════════════════════════════════════════
+        case 30: { // EVENT HORIZON — nested shells · aperture the camera crosses · flyby · rebuild
+          const g = gIdx[ri];
+          let x = ax, y = ay, z = az;
+          const cmp = 1 - .13 * W1;                       // 1 anticipation: draw in and lean back
+          x *= cmp; y *= cmp; z -= .7 * W1;
+          const R = 3.6 + g * 1.55;                       // 2 three nested counter-rotating shells
+          const c = GC[g], s = GS[g], ux = uX[ri], uz = uZ[ri];
+          x += ((ux * c + uz * s) * R - x) * W2;
+          y += (uY[ri] * R * .85 - y) * W2;
+          z += ((uz * c - ux * s) * R - z) * W2;
+          const ct = pcos[ri] * HC[g] - psin[ri] * HS[g]; // 3 shells unwrap into concentric rings:
+          const st = psin[ri] * HC[g] + pcos[ri] * HS[g]; //   an aperture that dilates onto the lens
+          const ar = K0 + g * .7;
+          x += (ct * ar - x) * W3; y += (st * ar * .8 - y) * W3; z += (-1.8 - g - z) * W3;
+          if (W4 > 0){                                    // 4 the rings funnel into a corridor of
+            const dr = 1.8 + (ri % 5) * 1.6;              //   streams that rush the lens from both
+            const fc = ct * CE - st * SE;                 //   sides. Passing through the centre of
+            const fs = st * CE + ct * SE;                 //   any ring puts its rim outside the
+            x += (fc * dr - x) * W4;                      //   frame, so this is what actually
+            y += (fs * dr * .8 - y) * W4;                 //   fills the shot at the moment of
+            z += ((g === 1 ? -12.0 : 9.0) - z) * W4;      //   passage.
+          }
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;   // 5 reconstruct
+          O.x = x; O.y = y; O.z = z; O.k = 24 + 76 * W5; return;
+        }
+
+        case 31: { // HELIX REACTOR — three intertwined strands, counter-rotation, strand handover
+          const g = gIdx[ri], u = pU[ri];
+          let x = ax, y = ay, z = az;
+          y *= 1 + .20 * W1 * VD; x *= 1 - .09 * W1; z -= .5 * W1;        // 1 stretch along the axis
+          const cp = hcos[ri], sp2 = hsin[ri] * VD;                        // 2 strand position: the
+          const hc = cp * GC[g] - sp2 * GS[g];                             //   phase advances with
+          const hs = sp2 * GC[g] + cp * GS[g];                             //   height, so it reads
+          const hr = K0 + (g === 1 ? .95 : 0);                             //   as a true helix
+          x += (hc * hr - x) * W2; y += ((u - .5) * 9.6 * VD - y) * W2; z += (hs * hr - z) * W2;
+          const d = g & 1 ? -SE : SE;                                      // 3 strands tighten and
+          const c2 = hc * CE - hs * d, s2 = hs * CE + hc * d;              //   counter-rotate, so
+          const r2 = hr * .60;                                             //   they cross in depth
+          x += (c2 * r2 - x) * W3; y += ((u - .5) * 6.9 * VD - y) * W3; z += (s2 * r2 - z) * W3;
+          const c3 = c2 * HC[0] - s2 * HS[0];                              // 4 handover: each strand
+          const s3 = s2 * HC[0] + c2 * HS[0];                              //   passes its spheres to
+          const r3 = r2 * 1.3;                                             //   the next one along
+          x += (c3 * r3 - x) * W4; y += ((u - .5) * 4.4 * VD - y) * W4; z += (s3 * r3 - z) * W4;
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 5 converge
+          O.x = x; O.y = y; O.z = z; O.k = 22 + 76 * W5; return;
+        }
+
+        case 32: { // SHOCKWAVE CASCADE — a travelling deformation detaches clusters in sequence
+          let x = ax, y = ay, z = az;
+          const lag = cl01((MIR * ax + 11) / 23);         // where this sphere sits along the wave
+          const t0 = .10 + lag * .26;                     // so clusters leave in a readable order
+          const d1 = S(t0 - .10, t0, t);                  // 1 compression bulge as the front arrives
+          const d2 = S(t0, t0 + .22, t);                  // 2 detach and run at the lens
+          const d3 = S(t0 + .18, t0 + .42, t);            // 3 curve around the subject
+          const bulge = d1 * (1 - d2);
+          x += MIR * 1.35 * bulge; y += .95 * bulge; z += 1.15 * bulge;
+          const fx = ax * 1.5 + pcos[ri] * 4.4;           // 2 the cluster opens as it comes forward.
+          const fy = ay * 1.1 + psin[ri] * 3.3;           //   The fan is wide enough that the stream
+          const fz = 12.2 + (ri % 3) * 2.4;               //   passes the lens rather than through it
+          x += (fx - x) * d2; y += (fy - y) * d2; z += (fz - z) * d2;
+          const gx = -MIR * (13.5 + (ri % 4) * 1.3);      // 3 it loops out to the far flank, behind
+          const gy = ay * .5 + (pU[ri] - .5) * 6;
+          const gz = -4.5 - (ri % 3) * 2.0;
+          x += (gx - x) * d3; y += (gy - y) * d3; z += (gz - z) * d3;
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 4/5 return and rebuild
+          O.x = x; O.y = y; O.z = z; O.k = 24 + 76 * W5; return;
+        }
+
+        case 33: { // GATE TUNNEL — a particle tube with ring-gates set into it, flown end to end
+          let x = ax, y = ay, z = az;
+          const cmp = 1 - .12 * W1; x *= cmp; y *= cmp; z -= .5 * W1;      // 1 anticipation
+          const u = pU[ri];
+          let tx, ty, tz;
+          if (ri % 3){                                                     // 2a two thirds build the
+            const ct = pcos[ri] * GC[3] - psin[ri] * GS[3];                //    tube wall: a long
+            const st = psin[ri] * GC[3] + pcos[ri] * GS[3];                //    helical sleeve, so
+            const wr = 4.3 + ((ri % 3) - 1) * .55;                         //    the lens always has
+            tz = 6.5 - u * 17.0;                                           //    wall streaming past
+            const sq = 1 - .34 * Math.max(0, 1 - Math.abs(tz - K2) * .55); // 3 a squeeze travels the
+            tx = ct * wr * sq; ty = st * wr * sq;                          //    tube as you fly it
+          } else {                                                         // 2b the other third are
+            const g = ((ri / 3) | 0) % 3;                                  //    three gates set into
+            const ct = pcos[ri] * GC[g] - psin[ri] * GS[g];                //    the wall. They are
+            const st = psin[ri] * GC[g] + pcos[ri] * GS[g];                //    deliberately tighter
+            const R = 2.9 + (ri & 1) * .35;                                //    than the tube so the
+            tx = ct * R; ty = st * R * HC[g];                              //    rim stays in frame
+            tz = GZ[g] + st * R * HS[g];                                   //    on approach
+          }
+          x += (tx - x) * W2; y += (ty - y) * W2; z += (tz - z) * W2;
+          x += (tx - x) * W3; y += (ty - y) * W3; z += (tz - z) * W3;      // 3 hold the tube while
+          x += (tx * .4 - x) * W4;                                         //   it twists and squeezes
+          y += (ty * .4 - y) * W4;                                         // 4 then it shears into
+          z += (16 - (ri % 6) * 6.5 - z) * W4;                             //   streams that overtake
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 5 and rebuild ahead
+          O.x = x; O.y = y; O.z = z; O.k = 24 + 76 * W5; return;
+        }
+
+        case 34: { // GYROSCOPE — interlocking rings on three axes, precessing, spheres migrating
+          const g = gIdx[ri];
+          let x = ax, y = ay, z = az;
+          const cmp = 1 - .11 * W1; x *= cmp; y *= cmp; z -= .5 * W1;      // 1 anticipation
+          // ring the sphere starts on
+          const c1 = GC[g], s1 = GS[g];
+          const t1 = pcos[ri] * c1 - psin[ri] * s1, u1 = psin[ri] * c1 + pcos[ri] * s1;
+          const R1 = 6.6 - g * 1.2;
+          let p1x, p1y, p1z;
+          if (g === 0){ p1x = t1 * R1; p1y = 0; p1z = u1 * R1; }           // axis Y
+          else if (g === 1){ p1x = t1 * R1; p1y = u1 * R1; p1z = 0; }      // axis Z
+          else { p1x = 0; p1y = t1 * R1; p1z = u1 * R1; }                  // axis X
+          const h1 = HC[g], k1 = HS[g];                                    // precession about Y
+          const q1x = p1x * h1 + p1z * k1, q1z = p1z * h1 - p1x * k1;
+          // the ring a migrating sphere transfers to
+          const mg = g === 2 ? 0 : g + 1;
+          const c2 = GC[mg], s2 = GS[mg];
+          const t2 = pcos[ri] * c2 - psin[ri] * s2, u2 = psin[ri] * c2 + pcos[ri] * s2;
+          const R2 = 6.6 - mg * 1.2;
+          let p2x, p2y, p2z;
+          if (mg === 0){ p2x = t2 * R2; p2y = 0; p2z = u2 * R2; }
+          else if (mg === 1){ p2x = t2 * R2; p2y = u2 * R2; p2z = 0; }
+          else { p2x = 0; p2y = t2 * R2; p2z = u2 * R2; }
+          const h2 = HC[mg], k2 = HS[mg];
+          const q2x = p2x * h2 + p2z * k2, q2z = p2z * h2 - p2x * k2;
+          // 2 take up the ring, with a staggered transfer between layers
+          const mt = .34 + pU[ri] * .22;
+          const mw = (ri % 7) < 3 ? S(mt, mt + .20, t) : 0;
+          x += (q1x + (q2x - q1x) * mw - x) * W2;
+          y += (p1y + (p2y - p1y) * mw - y) * W2;
+          z += (q1z + (q2z - q1z) * mw - z) * W2;
+          const RA = R1 + 1.0;                                             // 3 the three axes swing
+          x += (t1 * RA - x) * W3;                                         //   into one plane — the
+          y += (u1 * RA * .85 - y) * W3;                                   //   gimbal-lock climax
+          z += (-1.2 * g - z) * W3;
+          x += (t1 * 13.5 - x) * W4;                                       // 4 the assembly uncouples
+          y += (u1 * 8.0 - y) * W4;                                        //   into open streams
+          z += (-3 + (ri % 4) * 2.2 - z) * W4;
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 5 rebuild
+          O.x = x; O.y = y; O.z = z; O.k = 22 + 76 * W5; return;
+        }
+
+        case 35: { // CATHEDRAL — floor lattice · columns rising in sequence · arch · resolve
+          const c = ri % NCOL, u = pU[ri];
+          const ccx = COLX[c], ccz = COLZ[c];
+          let x = ax, y = ay, z = az;
+          const fw = S(.02 + u * .10, .26 + u * .10, t);                   // 1 the formation falls as
+          x += (ccx + pcos[ri] * .75 - x) * fw;                            //   a staggered curtain and
+          y += (FLOOR + .03 - y) * fw;                                     //   lands as a floor lattice
+          z += (ccz + psin[ri] * .75 - z) * fw;
+          const rt = .28 + (c / NCOL) * .18;                               // 2 columns rise in
+          const rw = S(rt, rt + .28, t);                                   //   sequence around the ring
+          const arch = K0 * u * u;                                         // 3 their tops lean inward
+          const shrink = 1 - .82 * arch;                                   //   and close into an arch
+          const colR = .62 * (1 - .40 * rw);   // tight enough to read as a shaft, not a cloud
+          x += (ccx * shrink + pcos[ri] * colR - x) * W2;
+          y += (FLOOR + u * 9.4 * rw + arch * 2.4 - y) * W2;
+          z += (ccz * shrink + psin[ri] * colR - z) * W2;
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 4/5 the vault resolves
+          O.x = x; O.y = y; O.z = z; O.k = 20 + 78 * W5; return;
+        }
+
+        case 36: { // SINGULARITY — accretion in-fall, core compression, radial eruption, reform
+          const g = gIdx[ri];
+          let x = ax, y = ay, z = az;
+          x += (CXa - ax) * .10 * W1;                                      // 1 the formation leans
+          y += (CYa - ay) * .10 * W1;                                      //   toward the attractor
+          z += (CZa - az) * .10 * W1;
+          const dx = ax - CXa, dy = ay - CYa, dz = az - CZa;               // 2 accretion: the offset
+          const c = GC[g], s = GS[g];                                      //   is rotated as it is
+          const rx = dx * c + dz * s, rz = dz * c - dx * s;                //   drawn in, so spheres
+          x += (CXa + rx * K0 - x) * W2;                                   //   spiral rather than
+          y += (CYa + dy * K0 * .85 - y) * W2;                             //   fall straight, and the
+          z += (CZa + rz * K0 - z) * W2;                                   //   spin accelerates
+          x += (CXa + rx * .04 - x) * W3;                                  // 3 core: a tight knot
+          y += (CYa + dy * .04 - y) * W3;
+          z += (CZa + rz * .04 - z) * W3;
+          x += (CXa + uX[ri] * K1 - x) * W4;                               // 4 eruption: radial jets,
+          y += (CYa + uY[ri] * K1 * .7 - y) * W4;                          //   biased at the lens
+          z += (CZa + (uZ[ri] * .55 + .62) * K1 - z) * W4;
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 5 reform
+          O.x = x; O.y = y; O.z = z; O.k = 26 + 74 * W5; return;
+        }
+
+        case 37: { // SHEAR STACK — the headline splits into depth planes that fan and interleave
+          const sl = ri & 3;
+          let x = ax, y = ay, z = az;
+          const cmp = 1 - .10 * W1; x *= cmp; y *= cmp;                    // 1 compress
+          z += (sl - 1.5) * 7.0 * W2;                                      // 2 split into deep planes
+          x += (sl & 1 ? 1 : -1) * 3.4 * MIR * W3;                         // 3 counter-shear
+          const c = GC[sl], s = GS[sl];                                    // 4 the planes fan open
+          const nx = x * c + z * s, nz = z * c - x * s;                    //   and cross through
+          x = nx; z = nz;                                                  //   one another
+          x += (bx - x) * W5; y += (by - y) * W5; z += (bz - z) * W5;      // 5 recombine
+          O.x = x; O.y = y; O.z = z; O.k = 24 + 76 * W5; return;
+        }
+
+        case 20: { // opening: isolated spheres in the void drawn toward an invisible magnetic centre
+          const d = .06 + r3 * .3;
+          wp(0, (r1 - .5) * 44, -3.9 + r2 * 11, -20 + r3 * 34); wp(1, ax, ay, az); leg(0, d, d + .55); O.k = 6; route(1, t); return;
+        }
+        default: { const e = eio(cl01(t)); O.x = ax + (bx - ax) * e; O.y = ay + (by - ay) * e; O.z = az + (bz - az) * e; }
+      }
+    }
+
+    // Legibility guards wrapped around every choreography:
+    //  · DRAMA scales how far a sphere is allowed to stray from the direct path.
+    //  · the last 16% of a shot pulls hard onto the exact target and stiffens the spring,
+    //    so a reading hold always begins on razor-sharp type instead of a settling cloud.
+    function shape(style, A, B, i3, ri, t){
+      shapeRaw(style, A, B, i3, ri, t);
+      if (style === 20 || style === 21) return;   // the intro and reduced-motion paths only
+      const bx = B[i3], by = B[i3 + 1], bz = B[i3 + 2];
+      if (DRAMA < .999){
+        const e = eio(cl01(t));
+        const dx = A[i3] + (bx - A[i3]) * e, dy = A[i3 + 1] + (by - A[i3 + 1]) * e, dz = A[i3 + 2] + (bz - A[i3 + 2]) * e;
+        O.x = dx + (O.x - dx) * DRAMA; O.y = dy + (O.y - dy) * DRAMA; O.z = dz + (O.z - dz) * DRAMA;
+      }
+      const sn = S(.84, 1, t);
+      if (sn > 0){
+        O.x += (bx - O.x) * sn; O.y += (by - O.y) * sn; O.z += (bz - O.z) * sn;
+        O.k += (110 - O.k) * sn;
+      }
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // CAMERA RIG — keyframed Hermite splines for position, aim, roll, focal length and
+    // subject facing per shot. Shot i is the move out of section i into section i+1: it
+    // starts exactly at rest pose i and brakes exactly at rest pose i+1.
+    // Keys are [t, ...values]; a trailing 0 forces zero tangent (a deliberate braking point).
+    // ───────────────────────────────────────────────────────────────────────────
+    function kf(keys, t, dims, out){
+      const n = keys.length;
+      if (t <= keys[0][0]){ for (let d = 0; d < dims; d++) out[d] = keys[0][d + 1]; return; }
+      if (t >= keys[n - 1][0]){ for (let d = 0; d < dims; d++) out[d] = keys[n - 1][d + 1]; return; }
+      let k = 0; while (k < n - 2 && t > keys[k + 1][0]) k++;
+      const k0 = keys[k], k1 = keys[k + 1], h = k1[0] - k0[0], u = (t - k0[0]) / h, u2 = u * u, u3 = u2 * u;
+      const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+      for (let d = 0; d < dims; d++){
+        let m0 = 0, m1 = 0;
+        if (k > 0 && k0[dims + 1] !== 0) m0 = (k1[d + 1] - keys[k - 1][d + 1]) / (k1[0] - keys[k - 1][0]);
+        if (k + 1 < n - 1 && k1[dims + 1] !== 0) m1 = (keys[k + 2][d + 1] - k0[d + 1]) / (keys[k + 2][0] - k0[0]);
+        out[d] = h00 * k0[d + 1] + h10 * h * m0 + h01 * k1[d + 1] + h11 * h * m1;
+      }
+    }
+
+    // Rest poses — the reading compositions. Every one of them is defined in subject-polar
+    // coordinates (azimuth, radius, height) and aims at the subject, so the type is dead
+    // front-on and perfectly legible at every single hold, whatever the shot did to get there.
+    const POSE = (az, r, h, fov) => ({az, r, h, fov, p: [Math.sin(az) * r, h, Math.cos(az) * r]});
+    const REST = [
+      POSE(0,    17.6, 1.2, 38),  // 01 wordmark
+      POSE(.12,  17.9,  .5, 42),  // 02 intent
+      POSE(-.14, 17.4,  .2, 42),  // 03 philosophy
+      POSE(.18,  17.8,  .7, 42),  // 04 foundation
+      POSE(.26,  16.9,  .6, 41),  // 05 interface
+      POSE(-.24, 17.2,  .9, 41),  // 06 application
+      POSE(.20,  17.6, 1.5, 42),  // 07 data & intelligence
+      POSE(-.30, 17.0, 1.1, 41),  // 08 interactive
+      POSE(0,    17.4,  .3, 42),  // 09 UBL
+      POSE(.34,  16.8,  .9, 41),  // 10 GForge
+      POSE(-.20, 17.3,  .5, 42),  // 11 intersection
+      POSE(.22,  17.0,  .4, 41),  // 12 GaragePal
+      POSE(-.26, 17.0,  .4, 41),  // 13 SaudiPak
+      POSE(.16,  17.2,  .8, 42),  // 14 EvolTech
+      POSE(-.18, 17.4,  .3, 42),  // 15 craft
+      POSE(.24,  16.9, 1.0, 41),  // 16 working standard
+      POSE(0,    16.6,  .2, 40),  // 17 foundation & education
+      POSE(0,    17.6,  .9, 35)   // 18 closing
+    ];
+
+    // Orbital move builder. `az`, `r` and `h` are key arrays sampled with the same
+    // interpolator the camera uses, so an orbit can ease, dwell, reverse or complete a
+    // full revolution and still brake exactly on the next reading pose. The aim stays
+    // locked on the subject and `face` keeps the formation turned toward the lens, which
+    // is what lets the camera travel all the way around without the type going edge-on.
+    const warpOrbit = t => t * .35 + .65 * (t * t * t * (t * (6 * t - 15) + 10));
+    const warpSpiral = t => 1 - Math.pow(1 - t, 1.6);
+    function arc(az, r, h, n, warp){
+      const out = [], a = [0], rr = [0], hh = [0];
+      for (let i = 1; i < n; i++){
+        const t = i / n, w = warp ? warp(t) : t;
+        kf(az, w, 1, a); kf(r, t, 1, rr); kf(h, t, 1, hh);
+        out.push([t, Math.sin(a[0]) * rr[0], hh[0], Math.cos(a[0]) * rr[0]]);
+      }
+      return out;
+    }
+
+    const SHOT_DEFS = [
+      // 01→02 SUBJECT REVOLUTION — one full, slow revolution around the wordmark. The camera
+      // rises above, drops to a low side profile and returns to front; the type turns with it
+      // (face 1), so the whole move is readable while the room swings through 360°.
+      {name: 'SUBJECT REVOLUTION', dur: 7, style: 13, k: 24,
+       pos: arc([[0, 0], [.5, Math.PI * 1.04], [1, TAU + .12]], [[0, 17.6], [.3, 13.2], [.55, 12], [.8, 15.6], [1, 17.9]], [[0, 1.2], [.25, 4.6], [.55, -2.2], [.8, -.3], [1, .5]], 22, warpOrbit),
+       look: [], fov: [[.3, 46], [.55, 47], [.85, 43]], roll: [[.25, .08], [.55, -.12], [.8, .05]], face: [], shakes: []},
+      // 02→03 HELIX REACTOR — the wordmark stretches into three intertwined strands. The camera
+      // drops to the base of the bundle, threads up between the strands as they counter-rotate
+      // and hand spheres to one another, then rises clear and tips down into the next frame.
+      {name: 'HELIX REACTOR', dur: 5.6, style: 31, k: 24, sp: {vd: 1},
+       pos: [[.14, 1.2, -2.6, 13.5], [.30, .6, -3.2, 7.2], [.46, -1.4, -.6, 2.4], [.58, -3.2, 3.6, 4.2], [.74, -1.2, 5.6, 9.5], [.88, -2.6, 2.2, 15.2]],
+       look: [[.3, 0, -2.2, 0], [.5, 0, .5, 0], [.7, 0, 2.2, 0], [.88, 0, .4, 0]],
+       fov: [[.3, 52], [.5, 62], [.72, 48]], roll: [[.3, .06], [.5, .18], [.72, -.05]],
+       face: [[.25, .25], [.62, .1], [.82, .55]], shakes: [{t: .46, a: .07, decay: 11, hz: 14}]},
+      // 03→04 SINGULARITY — the chapter break into THE ARCHITECTURE. The formation spirals into
+      // an attractor out in the void, compresses to a core, and erupts in radial jets past the
+      // lens. The camera chases it in, takes the eruption head-on, and is thrown back into frame.
+      {name: 'SINGULARITY', dur: 5.8, style: 36, k: 26, sp: {cx: -12, cy: .4, cz: -1},
+       pos: [[.18, -5.5, .8, 14.5], [.34, -10.5, 1.2, 9.5], [.50, -13.5, .6, 5.5], [.58, -12.0, .2, 7.8], [.74, -6.5, 1.4, 13.5], [.88, 1.5, 1.0, 16.5]],
+       look: [[.3, -7, 0, -1], [.5, -11, -.4, -2], [.62, -9, 0, -1], [.8, -1, .2, 0]],
+       fov: [[.32, 46], [.5, 38], [.56, 58], [.74, 46]], roll: [[.5, -.08], [.58, .1], [.76, -.03]],
+       face: [[.3, .2], [.55, 0], [.8, .5]], shakes: [{t: .545, a: .3, decay: 10, hz: 12}],
+       flashAt: .545, flashGain: .6},
+      // 04→05 EVENT HORIZON — three nested shells counter-rotate, unwrap into concentric rings
+      // and dilate into an aperture. The camera accelerates through the opening, the shells blow
+      // past it, and it banks around the far side as the next headline assembles ahead of it.
+      {name: 'EVENT HORIZON', dur: 6.0, style: 30, k: 24,
+       pos: [[.12, 2.2, .2, 13.0], [.26, 1.0, -.3, 8.0], [.40, .3, .1, 3.2], [.52, 0, .5, -2.2], [.62, -3.5, 1.6, -7.0], [.72, -9.5, 2.2, -1.5], [.80, -8.5, 1.6, 6.0], [.90, 1.5, .8, 14.5]],
+       look: [[.3, 0, 0, -6], [.46, 0, .2, -9], [.6, 0, .6, -4], [.74, 0, .4, 2], [.88, 0, .2, 0]],
+       fov: [[.3, 52], [.5, 64], [.66, 54], [.84, 44]], roll: [[.3, .05], [.52, -.13], [.68, .1], [.84, -.03]],
+       face: [[.22, .15], [.6, 0], [.84, .5]],
+       shakes: [{t: .52, a: .12, decay: 11, hz: 13}]},
+      // 05→06 SHEAR STACK — the headline splits into four planes separated deep in z, which
+      // counter-shear and fan open. The camera slides laterally and dips into the corridor
+      // between the planes, so the parallax is real geometry rather than a flat pass.
+      {name: 'SHEAR STACK', dur: 5.2, style: 37, k: 24, sp: {mir: 1},
+       pos: [[.16, 7.5, .2, 12.5], [.32, 6.0, -.8, 9.5], [.48, 1.0, -1.2, 7.0], [.62, -5.5, -.4, 8.0], [.78, -9.0, .8, 11.5], [.90, -7.0, 1.0, 15.0]],
+       look: [[.3, 3, 0, 0], [.5, -1, -.4, 0], [.7, -5, 0, 0], [.88, -1, 0, 0]],
+       fov: [[.3, 50], [.5, 60], [.72, 46]], roll: [[.32, .07], [.5, 0], [.7, -.08]],
+       face: [[.2, .1], [.6, 0], [.84, .6]], shakes: []},
+      // 06→07 SHOCKWAVE CASCADE — a travelling deformation crosses the formation left to right;
+      // clusters detach in sequence, run at the lens, loop out behind the subject and return.
+      // The camera tracks the wavefront, is overtaken by it, then cranes up to catch the rebuild.
+      {name: 'SHOCKWAVE CASCADE', dur: 5.6, style: 32, k: 24, sp: {mir: 1},
+       pos: [[.14, -8.0, .4, 14.0], [.30, -4.0, -.6, 9.0], [.46, 2.0, -1.0, 6.5], [.60, 6.5, .2, 9.5], [.74, 7.0, 2.6, 13.0], [.88, 5.0, 2.2, 16.0]],
+       look: [[.28, -5, -.5, 0], [.46, 1, -.8, 0], [.64, 4, 0, 0], [.84, 1, .4, 0]],
+       fov: [[.3, 48], [.48, 58], [.7, 44]], roll: [[.32, -.06], [.52, .09], [.74, -.04]],
+       face: [[.22, .3], [.55, .15], [.82, .6]], shakes: [{t: .455, a: .16, decay: 9, hz: 11}]},
+      // 07→08 SPIRAL ASCENT — in low and fast, spiralling up around the subject and out above it.
+      {name: 'SPIRAL ASCENT', dur: 5.4, style: 5, k: 24,
+       pos: arc([[0, .2], [.5, -2.6], [1, -TAU - .3]], [[0, 17.6], [.16, 9.8], [.45, 10.8], [.7, 12.8], [1, 17]], [[0, 1.5], [.14, -3.4], [.45, .4], [.75, 4.6], [1, 1.1]], 20, warpSpiral),
+       look: [[.14, 0, -1.2, 0], [.45, 0, 0, 0], [.75, 0, .6, 0]],
+       fov: [[.2, 54], [.5, 50], [.8, 46]], roll: [[.2, .22], [.5, .16], [.75, .1], [.9, -.06]], face: [[.3, .8], [.7, .9]], shakes: [{t: .12, a: .1, decay: 9, hz: 12}]},
+      // 08→09 THE DROP — the chapter break. Recoil, dive behind the falling spheres, whip to an
+      // overhead lock, descend into the travelling pulse, then rise into the enterprise frame.
+      {name: 'GROUND SKIM · OVERHEAD LOCK', dur: 5.6, style: 3, k: 55,
+       pos: [[.07, 0, .9, 19.8], [.16, 0, -2.6, 11.5], [.22, 0, -3.3, 7.6], [.3, 0, 13.5, 1.5], [.42, 0, 13, 1.2, 0], [.55, 0, 3.5, 6.5], [.64, 0, -2.6, 8.5], [.8, 3.8, -1.2, 13.5], [.92, 2.8, .2, 15.6]],
+       look: [[.07, 0, 0, 0], [.16, 0, -3, 0], [.22, 0, -4.2, -.5], [.3, 0, -4.4, -1.2], [.42, 0, -4.4, -1.2, 0], [.55, 0, -4.2, -1.2], [.64, 0, -3, -.5], [.8, 0, -1, 0]],
+       fov: [[.07, 46], [.16, 56], [.3, 54], [.42, 40], [.6, 52], [.8, 48]],
+       roll: [[.19, 0], [.2, .05], [.3, .1], [.42, 0], [.64, -.12], [.8, .07]], face: [[.25, .5], [.7, .7]],
+       shakes: [{t: .19, a: .45, decay: 9, hz: 11}, {t: .44, a: .12, decay: 8, hz: 9}], overhead: [.26, .31, .46, .54], flashAt: .19},
+      // 09→10 REVERSE REVOLUTION — a full revolution the other way, dipping low behind the
+      // subject and climbing out. Face stays at 1: this is the readable orbit, by design.
+      {name: 'REVERSE REVOLUTION', dur: 6.6, style: 13, k: 24,
+       pos: arc([[0, 0], [.5, -Math.PI * .98], [1, -TAU + .34]], [[0, 17.4], [.3, 13.4], [.6, 14.6], [1, 16.8]], [[0, .3], [.3, -2.4], [.62, 3.6], [1, .9]], 22, warpOrbit),
+       look: [], fov: [[.3, 48], [.7, 45]], roll: [[.3, -.1], [.7, .08]], face: [], shakes: []},
+      // 10→11 WIDE SWING — out to one flank, past the subject's shoulder, and back. The
+      // formation is pulled together from the far edges of the room as the camera returns.
+      {name: 'WIDE SWING', dur: 5.6, style: 10, k: 20,
+       pos: arc([[0, .34], [.4, 2.1], [.72, 1.5], [1, -.2]], [[0, 16.8], [.35, 15.5], [.7, 13.2], [1, 17.3]], [[0, .9], [.4, 2.6], [.75, -1.2], [1, .5]], 18),
+       look: [], fov: [[.25, 54], [.6, 48], [.85, 44]], roll: [[.25, .1], [.6, -.08]], face: [[.4, .8]], shakes: [{t: .26, a: .07, decay: 9, hz: 12}]},
+      // 11→12 WHIP-PAN — lanes pull the camera sideways, track through the left structure,
+      // whip across the centreline, crane up into the product frame.
+      {name: 'WHIP-PAN', dur: 4.8, style: 4, k: 24,
+       pos: [[.18, 5.5, -.4, 13], [.38, -6.5, -.8, 10.5], [.52, -7.5, -.5, 11], [.62, 7.5, -.3, 10.5], [.82, 2.5, 1, 15.5]],
+       look: [[.2, 2, 0, 0], [.38, -8, 0, 0], [.5, -8, 0, 0], [.62, 8, 0, 0], [.85, 0, 0, 0]],
+       fov: [[.55, 44], [.6, 58], [.7, 46]], roll: [[.55, 0], [.6, .12], [.7, 0]], face: [[.3, .35], [.75, .6]], shakes: [{t: .6, a: .08, decay: 9, hz: 12}]},
+      // 12→13 GYROSCOPE — the formation becomes three interlocking rings on three axes, which
+      // precess while spheres transfer between layers. They swing into one plane for a
+      // gimbal-lock climax, then uncouple into streams. The camera sweeps a long descending orbit.
+      {name: 'GYROSCOPE', dur: 6.0, style: 34, k: 22,
+       pos: arc([[0, .22], [.4, -1.5], [.7, -2.5], [1, -.26]], [[0, 17.0], [.3, 11.5], [.6, 9.5], [.85, 13.5], [1, 17.0]], [[0, .4], [.35, 3.2], [.65, -2.2], [1, .4]], 20),
+       look: [[.4, 0, .6, 0], [.7, 0, -.4, 0]],
+       fov: [[.35, 50], [.6, 54], [.85, 44]], roll: [[.3, .1], [.6, -.12], [.82, .04]],
+       face: [[.2, .15], [.6, 0], [.84, .5]], shakes: [{t: .60, a: .1, decay: 10, hz: 12}]},
+      // 13→14 GATE TUNNEL — three ring-gates stack away into the dark, each spinning on its own
+      // axis and tilting as you reach it. The camera punches through all three, banks inside the
+      // far end, and comes back along the outside while the gates shear into streams behind it.
+      {name: 'GATE TUNNEL', dur: 6.4, style: 33, k: 26,
+       pos: [[.12, -3.4, .3, 12.5], [.25, -1.5, .2, 7.0], [.37, -.3, .6, 2.0], [.48, .5, -.1, -2.2], [.58, -1.0, .8, -5.8], [.68, -4.8, 1.8, -5.5], [.80, -8.2, 1.4, 1.5], [.92, -1.5, 1.0, 12.5]],
+       look: [[.35, 0, .2, -6], [.5, 0, 0, -9], [.62, 0, .4, -9], [.74, 0, .6, -2], [.88, 0, .2, 0]],
+       fov: [[.3, 56], [.5, 64], [.64, 58], [.82, 46]],
+       roll: [[.3, .05], [.48, -.14], [.62, .16], [.76, -.08]],
+       face: [[.18, .1], [.62, 0], [.86, .5]],
+       shakes: [{t: .37, a: .07, decay: 12, hz: 15}, {t: .48, a: .07, decay: 12, hz: 15}, {t: .58, a: .09, decay: 12, hz: 15}],
+       corridor: true},
+      // 14→15 SHOCKWAVE CASCADE · REVERSE — the chapter break into CRAFT. The same travelling
+      // deformation mirrored, slower and heavier: the wave runs right to left, the clusters pass
+      // the lens on the other side, and the camera cranes high to receive the rebuild.
+      {name: 'SHOCKWAVE CASCADE · REVERSE', dur: 6.0, style: 32, k: 24, sp: {mir: -1},
+       pos: [[.14, 7.5, .6, 14.0], [.30, 3.5, -.8, 9.0], [.46, -2.5, -1.2, 6.0], [.58, -7.0, .4, 8.5], [.72, -8.0, 3.2, 12.0], [.88, -5.5, 1.6, 16.0]],
+       look: [[.28, 5, -.4, 0], [.46, -1, -.8, 0], [.64, -5, .2, 0], [.84, -1, .4, 0]],
+       fov: [[.3, 48], [.48, 60], [.7, 43]], roll: [[.32, .06], [.52, -.1], [.74, .04]],
+       face: [[.22, .3], [.55, .1], [.82, .6]], shakes: [{t: .455, a: .2, decay: 9, hz: 10}],
+       flashAt: .455, flashGain: .35},
+      // 15→16 HELIX REACTOR · INVERTED — the reactor runs the other way: strands descend and
+      // counter-rotate against the first one. The camera starts high looking down the column,
+      // drops through the bundle, and rises out of the floor into the next frame.
+      {name: 'HELIX REACTOR · INVERTED', dur: 6.0, style: 31, k: 24, sp: {vd: -1},
+       pos: [[.14, -2.0, 4.5, 13.0], [.28, -.8, 5.2, 7.0], [.44, 1.2, 2.0, 2.6], [.58, 2.4, -2.2, 3.2], [.72, 3.0, -3.0, 9.0], [.88, 4.5, .6, 14.5]],
+       look: [[.3, 0, 3.0, 0], [.5, 0, .2, 0], [.7, 0, -1.8, 0], [.88, 0, .4, 0]],
+       fov: [[.3, 50], [.5, 60], [.74, 45]], roll: [[.3, -.07], [.52, -.16], [.74, .05]],
+       face: [[.24, .25], [.6, .1], [.82, .55]], shakes: [{t: .44, a: .06, decay: 11, hz: 14}]},
+      // 16→17 CATHEDRAL — the chapter break into FOUNDATION. The formation falls as a staggered
+      // curtain, lands as a floor lattice, and rises again as a colonnade whose tops lean in and
+      // close overhead. The camera glides between the column feet, doubled in the floor, then cranes.
+      {name: 'CATHEDRAL', dur: 6.6, style: 35, k: 20,
+       pos: [[.18, 2.5, -3.4, 12.5], [.34, .8, -3.6, 7.0], [.50, -1.6, -3.0, 3.6], [.64, -2.6, -.6, 6.5], [.78, -2.0, 2.2, 11.0], [.90, -.8, 1.0, 14.8]],
+       look: [[.3, 0, -2.6, 0], [.5, 0, -1.0, 0], [.68, 0, 1.4, 0], [.86, 0, .4, 0]],
+       fov: [[.35, 46], [.6, 50], [.84, 42]], roll: [[.4, .03], [.7, -.02]],
+       face: [[.25, .2], [.6, .05], [.84, .5]], shakes: []},
+      // 17→18 EVENT HORIZON · RESOLVE — the opening geometry returns, quieter. The shells form
+      // and counter-rotate, then close inward instead of opening, and settle into the final
+      // frame. The camera is drawn low along the light, then arcs up onto the longest lens.
+      {name: 'EVENT HORIZON · RESOLVE', dur: 7.0, style: 30, k: 22, sp: {resolve: true},
+       pos: [[.18, -1.5, -2.6, 13.5], [.34, -5.0, -2.2, 9.5], [.50, -7.5, -.4, 8.0], [.66, -6.0, 2.0, 10.5], [.80, -3.0, 2.4, 13.5], [.92, -1.0, 1.4, 16.0]],
+       look: [[.35, 0, -1.6, -1], [.55, 0, -.2, 0], [.78, 0, .8, 0]],
+       fov: [[.4, 44], [.65, 40], [.86, 36]], roll: [[.45, .04], [.75, -.02]],
+       face: [[.3, .35], [.62, .2], [.84, .6]], shakes: []}
+    ];
+    const SHOTS = SHOT_DEFS.map((def, i) => {
+      const a = REST[i], b = REST[i + 1];
+      // Mid keys may carry a trailing 0 (a hold / braking point); the end keys are the two rest poses.
+      def.posKeys = [[0, a.p[0], a.p[1], a.p[2]], ...def.pos, [1, b.p[0], b.p[1], b.p[2]]];
+      def.lookKeys = [[0, 0, 0, 0], ...def.look, [1, 0, 0, 0]];
+      def.fovKeys = [[0, a.fov], ...def.fov, [1, b.fov]];
+      def.rollKeys = [[0, 0], ...def.roll, [1, 0]];
+      def.faceKeys = [[0, 1], ...(def.face || []), [1, 1]]; // every shot hands the subject back dead front-on
+      def.dur = def.dur || 5; return def;
+    });
+    const SHOT_RATE = SHOTS.map(s => (1 - HOLD) / s.dur); // sections/second while the director plays a transition
+
+    // Opening: low through foreground spheres, crane and dolly through a wide arc, settle on the wordmark.
+    const INTRO_DUR = 8;
+    const INTRO = {
+      pos: [[0, -14, -3.9, 7], [.35, -9.5, -1.5, 13.5], [.65, 6, .8, 16.2], [1, 0, 1.2, 17.6]],
+      look: [[0, 2, -1, 0], [.5, 0, 0, 0], [1, 0, 0, 0]], fov: [[0, 50], [.5, 44], [1, 38]], roll: [[0, .06], [.5, -.05], [1, 0]]
+    };
+
+    // Lighting mood per section: [light-wall level, flicker amount, overhead emphasis].
+    const MOOD = [
+      [.8, .5, 0], [.7, .45, 0], [.6, .3, 0],
+      [.8, .4, 0], [.75, .45, 0], [.7, .4, 0], [.75, .35, 0], [.95, .7, 0],
+      [.5, .15, .25], [.9, .6, 0], [.65, .3, 0],
+      [.7, .35, 0], [.7, .35, 0], [.75, .4, 0],
+      [.6, .25, 0], [.55, .2, .2],
+      [.15, 0, 1], [.35, .1, .45]
+    ];
+    const ARTIFACT_SCALE = [.76, .68, .72, .7, .72, .7, .74, .8, .7, .78, .72, .72, .72, .7, .72, .68, .68, .76];
+    const hash = x => fract(Math.sin(x * 127.1) * 43758.5453);
+    // Controlled, motivated flicker: a bar occasionally stutters and buzzes back; most of the time it is steady.
+    function flick(i, time, amount){
+      if (amount <= 0) return 1;
+      const rate = 1.1 + (i % 3) * .6, n = Math.floor(time * rate + i * 13.7), f = fract(time * rate + i * 13.7);
+      if (hash(n * 1.37 + i) > 1 - .1 * amount){ return f < .18 ? .12 : f < .3 ? .85 : f < .38 ? .2 : 1; }
+      return 1;
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // INPUT, SCROLL, PACING
+    // ───────────────────────────────────────────────────────────────────────────
+    let targetScrollProgress = 0, scrollVelocity = 0, lastScrollY = window.scrollY, userInteractedWithScroll = false;
+    let mouseX = 0, mouseY = 0, curMX = 0, curMY = 0;
+    const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    window.addEventListener('scroll', () => {
+      if (Math.abs(window.scrollY - lastScrollY) > 2) userInteractedWithScroll = true;
+      targetScrollProgress = THREE.MathUtils.clamp(window.scrollY / maxScroll(), 0, 1);
+      scrollVelocity = THREE.MathUtils.clamp((window.scrollY - lastScrollY) * .0005, -.03, .03); lastScrollY = window.scrollY;
+    }, {passive: true});
+    window.addEventListener('pointermove', e => {
+      mouseX = (e.clientX / innerWidth) * 2 - 1; mouseY = (e.clientY / innerHeight) * 2 - 1;
+    }, {passive: true});
+    // Manual scrolling is direct. Buttons and keys hand the scroll to the "director", which drives it at each shot's authored
+    // duration so a click plays the whole move; any wheel, touch or scrollbar drag takes control back instantly.
+    let autoPos = null, autoCur = 0;
+    const currentChapter = () => lastSceneLabel < 0 ? 0 : lastSceneLabel;
+    function directTo(i){
+      autoPos = THREE.MathUtils.clamp(i, 0, SECTION_COUNT - 1); autoCur = targetScrollProgress * (SECTION_COUNT - 1); userInteractedWithScroll = true;
+    }
+    ['wheel', 'touchstart', 'mousedown'].forEach(ev => window.addEventListener(ev, () => { autoPos = null; }, {passive: true}));
+    window.addEventListener('keydown', e => {
+      if (e.target && /^(button|a)$/i.test(e.target.tagName) && (e.key === ' ' || e.key === 'Enter')) return; // let focused controls activate
+      if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+      const cur = currentChapter();
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); directTo(cur + 1); }
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); directTo(cur - 1); }
+      else if (e.key === 'Home'){ e.preventDefault(); directTo(0); } else if (e.key === 'End'){ e.preventDefault(); directTo(SECTION_COUNT - 1); }
+    });
+    sceneControlAction.addEventListener('click', () => { const cur = currentChapter(); directTo(cur >= SECTION_COUNT - 1 ? 0 : cur + 1); });
+    sceneControlPrev.addEventListener('click', () => { const cur = currentChapter(); directTo(cur <= 0 ? SECTION_COUNT - 1 : cur - 1); });
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // MAIN LOOP
+    // ───────────────────────────────────────────────────────────────────────────
+    const clock = new THREE.Clock();
+    let sectionPos = 0, introTime = reducedMotion ? INTRO_DUR : -.6, firstFrame = false;
+    const cFwd = new THREE.Vector3(), cRight = new THREE.Vector3(), cUp = new THREE.Vector3();
+    const lookCur = new THREE.Vector3(0, 0, 0), upAxis = new THREE.Vector3(0, 1, 0), upOver = new THREE.Vector3(0, 0, -1);
+    let slowFrames = 0, frameCount = 0, mirrorOn = true, lastShot = -2, lastSceneLabel = -1;
+    const kv = [0, 0, 0], kl = [0, 0, 0], kfov = [0], kroll = [0], kface = [0];
+    const moodNow = [0, 0, 0];
+    let currentFov = 38;
+    let prevSectionPos = 0, posRate = 0;      // how fast the viewer is dragging the timeline
+    let azUnwrapped = 0;                      // continuous camera azimuth, so the subject never spins at a ±π seam
+    let panelAmt = 0, dossierIdx = -1;        // dossier presence, and the composition offset it drives
+    let viewOffsetOn = false;
+
+    function animate(){
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), .05), elapsed = clock.elapsedTime;
+
+      // Adaptive quality: step down pixel ratio, then reflections, if frames stay slow.
+      frameCount++;
+      if (frameCount > 90 && dt > .032){ slowFrames++; } else if (slowFrames > 0 && dt < .022) slowFrames--;
+      if (slowFrames > 70){
+        slowFrames = 0;
+        if (pixelRatioCap > 1){ pixelRatioCap = Math.max(1, pixelRatioCap - .3); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pixelRatioCap)); dustUniforms.uScale.value = innerHeight * Math.min(devicePixelRatio || 1, pixelRatioCap) / .77; }
+        else if (mirrorOn){ mirrorOn = false; mirror.visible = false; }
+      }
+
+      // The opening is time-based until the viewer moves; any scroll input takes control immediately.
+      if (introTime < INTRO_DUR) introTime += dt;
+      const introT = cl01(introTime / INTRO_DUR), intro = introT < 1 && !userInteractedWithScroll;
+
+      // Director-driven travel (buttons / keys): reading holds are crossed quickly, shots play at their authored duration,
+      // long jumps (Home / End / return to opening) skip the choreography. Uses a float cursor so slow moves never stall on pixel rounding.
+      if (autoPos !== null){
+        const dist = autoPos - autoCur;
+        if (Math.abs(dist) < 1e-3){ autoCur = autoPos; autoPos = null; }
+        else {
+          const ia = Math.max(0, Math.min(Math.floor(autoCur), SECTION_COUNT - 2)), fa = autoCur - ia;
+          const speed = reducedMotion ? 4 : Math.abs(dist) > 1.6 ? 5.5 : (fa >= HOLD - .02 ? SHOT_RATE[ia] : 1.7);
+          autoCur += Math.sign(dist) * Math.min(speed * dt, Math.abs(dist));
+          targetScrollProgress = autoCur / (SECTION_COUNT - 1);
+          window.scrollTo(0, targetScrollProgress * maxScroll());
+        }
+      }
+
+      // Scroll is the master timeline and stays one-to-one with the wheel, so the page never
+      // feels like it is fighting the viewer. What adapts instead is the choreography.
+      const targetPos = (!userInteractedWithScroll && introT < .9) ? 0 : targetScrollProgress * (SECTION_COUNT - 1);
+      const inputEnergy = Math.min(1, Math.abs(scrollVelocity) * 28);
+      const response = reducedMotion ? 22 : 16 + inputEnergy * 14;
+      sectionPos += (targetPos - sectionPos) * (1 - Math.exp(-dt * response));
+      sectionPos = THREE.MathUtils.clamp(sectionPos, 0, SECTION_COUNT - 1);
+      if (Math.abs(targetPos - sectionPos) < .0012) sectionPos = targetPos;
+      scrollVelocity *= .9; curMX += (mouseX - curMX) * .04; curMY += (mouseY - curMY) * .04;
+
+      // Timeline rate → DRAMA. Reading pace keeps the full cinema; a fast flick collapses the
+      // choreography to a clean direct morph so the viewer is never left staring at mush.
+      const rawRate = Math.abs(sectionPos - prevSectionPos) / Math.max(dt, 1e-4);
+      prevSectionPos = sectionPos;
+      posRate += (rawRate - posRate) * (1 - Math.exp(-dt * 7));
+      DRAMA = (intro || reducedMotion) ? 1 : 1 - cl01((posRate - .5) / 1.5) * .88;
+
+      const idx = Math.min(Math.floor(sectionPos), SECTION_COUNT - 1), local = idx === SECTION_COUNT - 1 ? 0 : sectionPos - idx;
+      const tt = (idx < SECTION_COUNT - 1 && !intro) ? cl01((local - HOLD) / (1 - HOLD)) : 0;
+      const shot = SHOTS[Math.min(idx, SHOTS.length - 1)];
+
+      // ── HUD ──
+      const labelIdx = tt > .55 ? Math.min(idx + 1, SECTION_COUNT - 1) : idx;
+      if (labelIdx !== lastShot){
+        const sec = PORTFOLIO_DATA.sections[labelIdx];
+        sectionIndicator.textContent = `[ ${sec.id} / ${String(SECTION_COUNT).padStart(2, '0')} ] ${sec.label}`;
+        lastShot = labelIdx;
+      }
+      shotReadout.textContent = intro ? 'MATERIALIZATION' : (tt > 0 && tt < 1 ? shot.name : 'READING HOLD');
+      timelineFill.style.width = `${(sectionPos / (SECTION_COUNT - 1)) * 100}%`;
+      ctaEl.classList.toggle('on', idx === SECTION_COUNT - 1 && !intro);
+      if (labelIdx !== lastSceneLabel){
+        const sceneSec = PORTFOLIO_DATA.sections[labelIdx];
+        const isLast = labelIdx === SECTION_COUNT - 1;
+        sceneControlAction.innerHTML = isLast ? 'RETURN TO OPENING <span aria-hidden="true">↗</span>' : 'NEXT SEQUENCE <span aria-hidden="true">↗</span>';
+        sceneControlAction.setAttribute('aria-label', isLast ? 'Return to the opening section' : `Advance from ${sceneSec.label} to the next portfolio section`);
+        lastSceneLabel = labelIdx;
+      }
+
+      // ── THE READABLE LAYER ──
+      // The dossier is only ever shown on a still, front-facing hold, and its copy is only
+      // ever swapped while it is invisible — so nothing changes under the reader's eyes.
+      // "Settled" is measured directly against the scroll target rather than inferred from a
+      // smoothed rate: that way it fires the instant a button-driven jump actually arrives,
+      // instead of waiting on the rate signal to decay after the jump has already finished.
+      const settled = Math.abs(targetPos - sectionPos) < .015;
+      let panelShown = !intro && tt === 0 && settled;
+      if (dossierIdx !== idx){
+        if (panelShown && dossierIdx >= 0 && panelAmt > .02){ panelShown = false; } // fade out first, then swap
+        else { renderDossier(idx); dossierIdx = idx; }
+      }
+      dossier.classList.toggle('on', panelShown);
+      dossierScrim.classList.toggle('on', panelShown);
+      chapterRail.classList.toggle('on', !intro);
+      panelAmt += ((panelShown ? 1 : 0) - panelAmt) * (1 - Math.exp(-dt * 3.4));
+
+      // ── PARTICLES ──
+      const hasTargets = targets.length === SECTION_COUNT;
+      if (!hasTargets) return;
+      const style = intro ? 20 : (reducedMotion ? 21 : shot.style);
+      const A = intro ? targets[0] : targets[idx], B = targets[Math.min(idx + 1, SECTION_COUNT - 1)];
+      const DA = intro ? decorTargets[0] : decorTargets[idx], DB = decorTargets[Math.min(idx + 1, SECTION_COUNT - 1)];
+      const st = intro ? introT : tt, baseK = intro ? 6 : shot.k;
+      prepStyle(style, st, shot);   // hoist everything constant across the 7,600 spheres
+      const fieldPull = scrollVelocity * 2.1;
+      // Bead size travels with the type: it is a property of the line a sphere belongs to.
+      const SA = intro ? targetSizes[0] : targetSizes[idx], SB = targetSizes[Math.min(idx + 1, SECTION_COUNT - 1)], sE = eio(cl01(st));
+
+      for (let i = 0; i < N; i++){
+        const i3 = i * 3; O.k = baseK; shape(style, A, B, i3, i, st);
+        const k = O.k, dmp = 1.9 * Math.sqrt(k);
+        const px = P[i3], py = P[i3 + 1], pz = P[i3 + 2];
+        let vx = V[i3] + ((O.x - px) * k - V[i3] * dmp) * dt, vy = V[i3 + 1] + ((O.y - py) * k - V[i3 + 1] * dmp + Math.sin(px * .7 + elapsed * .65) * fieldPull * .1) * dt, vz = V[i3 + 2] + ((O.z - pz) * k - V[i3 + 2] * dmp) * dt;
+        const sp = vx * vx + vy * vy + vz * vz; if (sp > 2025){ const f = 45 / Math.sqrt(sp); vx *= f; vy *= f; vz *= f; }
+        V[i3] = vx; V[i3 + 1] = vy; V[i3 + 2] = vz;
+        const nx = px + vx * dt, ny = py + vy * dt, nz = pz + vz * dt;
+        P[i3] = nx; P[i3 + 1] = ny; P[i3 + 2] = nz;
+        const idle = reducedMotion ? 0 : Math.sin(elapsed * 1.1 + i * .013) * .0025;
+        let sc = (SA[i] + (SB[i] - SA[i]) * sE) * (1 + Math.sin(elapsed * .8 + i * .031) * .012);
+        if (intro){ const a0 = rA[i] * .22; sc *= S(a0, a0 + .12, introT); }
+        const o = i * 16; lm[o] = sc; lm[o + 5] = sc; lm[o + 10] = sc; lm[o + 12] = nx; lm[o + 13] = ny + idle; lm[o + 14] = nz;
+      }
+      letterMesh.instanceMatrix.needsUpdate = true;
+
+      for (let i = 0; i < M; i++){
+        const i3 = i * 3; O.k = baseK; shape(style, DA, DB, i3, i, st);
+        const k = O.k, dmp = 1.9 * Math.sqrt(k);
+        const px = DP[i3], py = DP[i3 + 1], pz = DP[i3 + 2];
+        let vx = DV[i3] + ((O.x - px) * k - DV[i3] * dmp) * dt, vy = DV[i3 + 1] + ((O.y - py) * k - DV[i3 + 1] * dmp) * dt, vz = DV[i3 + 2] + ((O.z - pz) * k - DV[i3 + 2] * dmp) * dt;
+        const sp = vx * vx + vy * vy + vz * vz; if (sp > 2025){ const f = 45 / Math.sqrt(sp); vx *= f; vy *= f; vz *= f; }
+        DV[i3] = vx; DV[i3 + 1] = vy; DV[i3 + 2] = vz;
+        const nx = px + vx * dt, ny = py + vy * dt, nz = pz + vz * dt; DP[i3] = nx; DP[i3 + 1] = ny; DP[i3 + 2] = nz;
+        let sc = 1.25 + Math.sin(elapsed * .9 + i * .17) * .08; if (intro) sc *= S(0, .3, introT);
+        const o = i * 16; dm_[o] = sc; dm_[o + 5] = sc; dm_[o + 10] = sc; dm_[o + 12] = nx; dm_[o + 13] = ny; dm_[o + 14] = nz;
+      }
+      decorMesh.instanceMatrix.needsUpdate = true;
+
+      // ── CAMERA ──
+      const aspect = innerWidth / innerHeight, dmul = Math.min(2.2, Math.max(1, 1.45 / aspect)); // keep type inside narrow viewports
+      let cx, cy, cz, lx = 0, ly = 0, lz = 0, roll = 0, fov = 42, overhead = 0, shx = 0, shy = 0, shr = 0, faceAmt = 1;
+      if (intro){
+        kf(INTRO.pos, introT, 3, kv); kf(INTRO.look, introT, 3, kl); kf(INTRO.fov, introT, 1, kfov); kf(INTRO.roll, introT, 1, kroll);
+        cx = kv[0]; cy = kv[1]; cz = kv[2]; lx = kl[0]; ly = kl[1]; lz = kl[2]; fov = kfov[0]; roll = kroll[0];
+      } else {
+        const a = REST[idx], b = REST[Math.min(idx + 1, SECTION_COUNT - 1)], e = eio(tt);
+        // The calm read of this moment: a straight glide between two reading poses, aim locked
+        // on the subject. Everything authored is layered on top of it, scaled by DRAMA.
+        const azC = a.az + (b.az - a.az) * e, rC = a.r + (b.r - a.r) * e;
+        const gx = Math.sin(azC) * rC, gz = Math.cos(azC) * rC, gy = a.h + (b.h - a.h) * e, gfov = a.fov + (b.fov - a.fov) * e;
+        if (reducedMotion){
+          cx = gx; cy = gy; cz = gz; fov = gfov;
+        } else {
+          kf(shot.posKeys, tt, 3, kv); kf(shot.lookKeys, tt, 3, kl); kf(shot.fovKeys, tt, 1, kfov); kf(shot.rollKeys, tt, 1, kroll); kf(shot.faceKeys, tt, 1, kface);
+          cx = kv[0]; cy = kv[1]; cz = kv[2]; lx = kl[0]; ly = kl[1]; lz = kl[2]; fov = kfov[0]; roll = kroll[0]; faceAmt = kface[0];
+          if (idx >= SECTION_COUNT - 1){ const r = REST[SECTION_COUNT - 1]; cx = r.p[0]; cy = r.p[1]; cz = r.p[2]; fov = r.fov; }
+          if (shot.overhead){ const o = shot.overhead; overhead = S(o[0], o[1], tt) * (1 - S(o[2], o[3], tt)); }
+          // Motivated shake only: damped impulses on impacts and hard accelerations.
+          for (let s = 0; s < shot.shakes.length; s++){
+            const sk = shot.shakes[s], tau = (tt - sk.t) * shot.dur;
+            if (tau > 0){ const env = sk.a * Math.exp(-sk.decay * tau) * Math.min(1, tau * 40), ph = tau * sk.hz * 6.2832; shx += Math.sin(ph) * env; shy += Math.cos(ph * 1.31) * env * .7; shr += Math.sin(ph * .8) * env * .12; }
+          }
+          // Collapse toward the calm glide when the viewer is moving fast.
+          cx = gx + (cx - gx) * DRAMA; cy = gy + (cy - gy) * DRAMA; cz = gz + (cz - gz) * DRAMA;
+          fov = gfov + (fov - gfov) * DRAMA;
+          lx *= DRAMA; ly *= DRAMA; lz *= DRAMA; roll *= DRAMA; overhead *= DRAMA;
+          shx *= DRAMA; shy *= DRAMA; shr *= DRAMA;
+          faceAmt = 1 + (faceAmt - 1) * DRAMA;
+        }
+      }
+      cx *= dmul; cz *= dmul; // push back on narrow viewports without changing the orbit angle
+      // A little parallax from the pointer, strongest during calm reading holds.
+      const calm = intro ? 0 : 1 - Math.min(1, Math.sin(tt * Math.PI) * 3);
+      const tx = cx + shx + curMX * .35 * calm, ty = Math.max(FLOOR_PLANE + .55, cy + shy - curMY * .22 * calm), tz = cz; // never dip under the floor
+      if (!firstFrame){ camera.position.set(tx, ty, tz); lookCur.set(lx, ly, lz); }
+      const follow = 1 - Math.exp(-dt * 11);
+      camera.position.x += (tx - camera.position.x) * follow; camera.position.y += (ty - camera.position.y) * follow; camera.position.z += (tz - camera.position.z) * follow;
+      lookCur.x += (lx + curMX * .12 * calm - lookCur.x) * follow; lookCur.y += (ly - curMY * .07 * calm - lookCur.y) * follow; lookCur.z += (lz - lookCur.z) * follow;
+      camera.up.copy(upAxis).lerp(upOver, overhead).normalize();
+      camera.lookAt(lookCur); camera.rotateZ(roll + shr + scrollVelocity * .08 * DRAMA);
+
+      // ── THE SUBJECT TURNS TO MEET THE LENS ──
+      // The formation sits in a yawing stage group. Face 1 holds it exactly square to the
+      // camera, which is what lets a shot travel the whole way around the subject while the
+      // headline stays readable; shots drop face below 1 when the travel itself is the point.
+      // The azimuth is accumulated rather than taken from atan2 directly, so a full
+      // revolution never snaps at the ±π seam.
+      const camAz = Math.atan2(camera.position.x - lookCur.x, camera.position.z - lookCur.z);
+      azUnwrapped += wrapPi(camAz - azUnwrapped);
+      const yaw = azUnwrapped * faceAmt;
+      stage.rotation.y = yaw; stageMirror.rotation.y = yaw;
+
+      // ── COMPOSITION ──
+      // A lens shift (not a camera move) makes room for the dossier: the subject is pushed
+      // off-centre on screen without touching the orbit, the aim, or any world geometry.
+      const shiftX = mobile ? 0 : .085 * panelAmt, shiftY = mobile ? .17 * panelAmt : 0;
+      currentFov += (fov - currentFov) * (firstFrame ? .5 : 1); camera.fov = currentFov;
+      // Pixel units, not normalized: setViewOffset() reassigns camera.aspect from the full size.
+      if (shiftX > .001 || shiftY > .001){
+        camera.setViewOffset(innerWidth, innerHeight, -shiftX * innerWidth, shiftY * innerHeight, innerWidth, innerHeight);
+        viewOffsetOn = true;
+      }
+      else if (viewOffsetOn){ camera.clearViewOffset(); viewOffsetOn = false; }
+      else camera.updateProjectionMatrix();
+
+      // Chapter sculptures sit BEHIND the particle type and off to one side, so they add depth
+      // without ever covering letterforms. They are placed in screen fractions and compensate
+      // for the lens shift, then fade in as the camera brakes into a chapter.
+      camera.getWorldDirection(cFwd); cRight.set(1, 0, 0).applyQuaternion(camera.quaternion); cUp.set(0, 1, 0).applyQuaternion(camera.quaternion);
+      const subjectDist = camera.position.distanceTo(lookCur), artDist = Math.max(15, subjectDist + 7);
+      const halfH = artDist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), halfW = halfH * camera.aspect;
+      const sxF = mobile ? 0 : .31, syF = mobile ? .3 : -.26;
+      for (let ai = 0; ai < artifactGroups.length; ai++){
+        const ag = artifactGroups[ai];
+        const visibility = S(ai - .22, ai + .08, sectionPos) * (1 - S(ai + .32, ai + .58, sectionPos));
+        if (intro || visibility < .003){ ag.visible = false; continue; }
+        ag.visible = true;
+        const ox = (sxF - shiftX) * 2 * halfW, oy = (syF - shiftY) * 2 * halfH + Math.sin(elapsed * .6 + ai) * halfH * .012;
+        ag.position.copy(camera.position).addScaledVector(cFwd, artDist).addScaledVector(cRight, ox).addScaledVector(cUp, oy);
+        ag.scale.setScalar((mobile ? .55 : 1) * (ARTIFACT_SCALE[ai] || .72) * (artDist / 12.5) * (.9 + visibility * .1));
+        ag.rotation.y = elapsed * (reducedMotion ? 0 : (.12 + (ai % 3) * .035)) * (ai % 2 ? -1 : 1) + ai * .4;
+        ag.rotation.x = reducedMotion ? 0 : Math.sin(elapsed * .31 + ai) * .12;
+        const sculptFade = visibility * (.42 + .32 * (1 - panelAmt)); // recede while there is copy to read
+        ag.traverse(o => {
+          if (!o.material) return;
+          const base = o.userData.baseOpacity === undefined ? 1 : o.userData.baseOpacity;
+          o.material.opacity = base * sculptFade;
+          if (o.userData.orbitSpeed && !reducedMotion) o.rotation.z = o.userData.baseRotation.z + Math.sin(elapsed * .28 + ai) * .12 + elapsed * o.userData.orbitSpeed;
+          if (o.userData.satellite !== undefined){
+            const a = o.userData.orbitAngle + (reducedMotion ? 0 : elapsed * (.12 + ai * .006) * (o.userData.satellite % 2 ? -1 : 1)), r = o.userData.orbitRadius;
+            o.position.x = Math.cos(a) * r; o.position.y = Math.sin(a) * r * .78; o.position.z = Math.sin(a * 2 + ai) * .32;
+          }
+        });
+      }
+
+      // ── LIGHT CUES ──
+      const blend = eio(tt), m0 = MOOD[idx], m1 = MOOD[Math.min(idx + 1, SECTION_COUNT - 1)];
+      for (let q = 0; q < 3; q++) moodNow[q] = m0[q] + (m1[q] - m0[q]) * blend;
+      const wallLevel = moodNow[0];
+      const isDrop = !intro && !reducedMotion && idx === 7 && DRAMA > .35;
+      const lit = !intro && !reducedMotion && shot.flashAt !== undefined && DRAMA > .35;
+      const flash = lit ? Math.max(0, 1 - Math.abs(tt - shot.flashAt) * 16) * DRAMA * (shot.flashGain || 1) : 0;
+      let flickAmt = moodNow[1] + THREE.MathUtils.clamp((camera.position.x - 4) / 6, 0, 1) * .6; // a passing camera stirs the wall
+      if (reducedMotion) flickAmt = 0;
+      for (let i = 0; i < bars.length; i++){
+        const b = bars[i];
+        let v = b.base * wallLevel * 1.15 * flick(i, elapsed, flickAmt);
+        if (intro) v *= S(.1 + i * .018, .13 + i * .018, introT) * (introT < .2 ? (Math.sin(introT * 240 + i) > -.2 ? 1 : .15) : 1); // distant lights come up with one stutter
+        if (isDrop){
+          const cut = .02 + i * .012, back = .44 + i * .022;
+          v *= 1 - S(cut, cut + .02, tt) * (1 - S(back, back + .035, tt)) * .97; // strips die in sequence, return on the travelling pulse
+          v += Math.max(0, Math.sin((tt - .44) * 40 - i * .9)) * .22 * S(.44, .5, tt) * (1 - S(.7, .78, tt));
+        }
+        if (!intro && idx === 12 && i === 4 && tt < .3) v *= .15 + .85 * Math.abs(Math.sin(tt * 70)); // one strip flickers; its glow leads the next move
+        b.mat.opacity = Math.min(1, Math.max(.03, v));
+      }
+      const cw = (!intro && shot.corridor) ? S(0, .15, tt) * (1 - S(.78, .95, tt)) * DRAMA : 0;
+      for (let i = 0; i < corridor.length; i++) corridor[i].mat.opacity = cw * .85 * flick(i + 3, elapsed, .7);
+      for (let i = 0; i < shafts.length; i++){
+        const s = shafts[i], inten = bars[s.bar].mat.opacity * s.gain;
+        s.mesh.material.opacity = .02 + inten * .085; s.mesh.rotation.y = Math.atan2(camera.position.x - s.mesh.position.x, camera.position.z - s.mesh.position.z);
+        dustUniforms.uBeams.value[i].z = inten * .9;
+      }
+      for (let i = 0; i < fogBanks.length; i++){ const f = fogBanks[i]; f.mesh.rotation.y = Math.atan2(camera.position.x - f.mesh.position.x, camera.position.z - f.mesh.position.z); f.mesh.material.opacity = f.base * (.5 + wallLevel * .8); }
+      impactPuff.rotation.y = Math.atan2(camera.position.x, camera.position.z);
+      const puff = isDrop ? S(.17, .24, tt) * (1 - S(.4, .6, tt)) : 0;
+      impactPuff.material.opacity = puff * .2; impactPool.material.opacity = (isDrop ? flash * .22 : 0) + (isDrop ? Math.max(0, Math.sin((tt - .44) * 40)) * .05 * S(.44, .5, tt) * (1 - S(.7, .78, tt)) : 0);
+
+      // The floor response follows the same timecode as the camera recoil and the light flash.
+      const impactAge = isDrop ? (tt - shot.flashAt) * shot.dur : -1;
+      const impactLive = impactAge >= 0 && impactAge < 1.05;
+      for (let r = 0; r < shockwaves.length; r++){
+        const ring = shockwaves[r], age = impactLive ? Math.max(0, impactAge - r * .075) : -1;
+        if (age >= 0){
+          const radius = .25 + age * (8.5 + r * 1.8);
+          ring.scale.set(radius, radius, radius);
+          ring.material.opacity = Math.max(0, (1 - age / .92) * (.42 - r * .09));
+        } else {
+          ring.scale.setScalar(.001);
+          ring.material.opacity = 0;
+        }
+      }
+      const sparkAge = impactLive ? impactAge : -1;
+      const sparkAttr = sparkGeo.attributes.position;
+      for (let i = 0; i < sparkCount; i++){
+        const o = i * 3, seed = sparkSeeds[i];
+        if (sparkAge >= 0 && sparkAge < .92 && seed < Math.max(0, 1 - sparkAge * .8)){
+          const age = Math.max(0, sparkAge - seed * .035);
+          const x = sparkVelocities[o] * age;
+          const y = FLOOR_PLANE + .08 + sparkVelocities[o + 1] * age - 4.9 * age * age;
+          const z = -1.4 + sparkVelocities[o + 2] * age;
+          sparkPositions[o] = x;
+          sparkPositions[o + 1] = Math.max(FLOOR_PLANE + .04, y);
+          sparkPositions[o + 2] = z;
+        } else {
+          sparkPositions[o] = 0;
+          sparkPositions[o + 1] = -100;
+          sparkPositions[o + 2] = 0;
+        }
+      }
+      sparkAttr.needsUpdate = true;
+      sparks.material.opacity = sparkAge >= 0 ? Math.max(0, 1 - sparkAge / .92) * .9 : 0;
+      floorPool.material.opacity = .04 + wallLevel * .1;
+      rim.intensity = 14 + wallLevel * 34 + flash * 85; rim.color.setHex(flash > .2 ? 0xdbeaff : 0x5d8fcf);
+      topLight.intensity = 10 + moodNow[2] * 36 + flash * 14;
+      key.intensity = 56 + flash * 20 + (moodNow[2] > .5 ? 12 : 0);
+      sweepLight.intensity = 16 + flash * 24; sweepLight.position.x = -7 + Math.sin(elapsed * .19 + idx * .7) * 6; sweepLight.position.y = 7 + Math.cos(elapsed * .23) * 2;
+      scene.fog.density = .024 + puff * .006;
+      dustUniforms.uTime.value = elapsed; dustUniforms.uImpact.value = Math.max(flash, puff * .6);
+
+      renderer.render(scene, camera);
+      if (!firstFrame){ firstFrame = true; document.body.classList.add('webgl-ready'); }
+    }
+
+    function onResize(){
+      camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pixelRatioCap)); renderer.setSize(innerWidth, innerHeight);
+      dustUniforms.uScale.value = innerHeight * Math.min(devicePixelRatio || 1, pixelRatioCap) / .77;
+    }
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => { onResize(); clearTimeout(resizeTimer); resizeTimer = setTimeout(() => {
+      if (!targets.length) return;
+      for (let i = 0; i < SECTION_COUNT; i++){ const r = rasterizeTextToPoints(PORTFOLIO_DATA.sections[i].lines); targets[i] = r.pos; targetSizes[i] = r.sz; }
+    }, 250); }, {passive: true});
+    document.addEventListener('visibilitychange', () => { if (document.hidden) clock.stop(); else clock.start(); });
+    dustUniforms.uScale.value = innerHeight * Math.min(devicePixelRatio || 1, pixelRatioCap) / .77;
+
+    // Static-analysis hook: present only with ?audit in the URL, so production ships no globals.
+    if (location.search.indexOf('audit') >= 0){
+      window.__FILM = {shape, prepStyle, kf, SHOTS, REST, targets, decorTargets, HOLD,
+                       O: O, N: N, M: M, setDrama: v => { DRAMA = v; }};
+    }
+
+    buildTargets().then(() => {
+      // Start every sphere where the opening shot places it, so the first frame is already in the void.
+      for (let i = 0; i < N; i++){ const i3 = i * 3; O.k = 6; shape(20, targets[0], targets[0], i3, i, 0); P[i3] = O.x; P[i3 + 1] = O.y; P[i3 + 2] = O.z; }
+      for (let i = 0; i < M; i++){ const i3 = i * 3; O.k = 6; shape(20, decorTargets[0], decorTargets[0], i3, i, 0); DP[i3] = O.x; DP[i3 + 1] = O.y; DP[i3 + 2] = O.z; }
+      if (reducedMotion){ P.set(targets[0]); DP.set(decorTargets[0]); }
+      animate();
+    }).catch(err => {
+      console.error('Portfolio scene initialization failed:', err);
+      loaderCaption.textContent = 'SCENE INITIALIZATION ISSUE';
+      document.body.classList.remove('webgl-ready');
+      setTimeout(() => loader.classList.add('hidden'), 250);
+    });
+  })();
+  </script>
+</body>
+</html>
